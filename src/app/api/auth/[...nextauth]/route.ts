@@ -1,9 +1,10 @@
 // src/pages/api/auth/[...nextauth].ts
-import NextAuth from 'next-auth'
+import NextAuth, { NextAuthOptions, Session, User } from 'next-auth'
+import type { JWT } from 'next-auth/jwt'
 import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import connectDB from '@/lib/db'
-import User from '@/models/User'
+import UserModel from '@/models/User'
 import type { IUser } from '@/models/User'
 import bcrypt from 'bcryptjs'
 import nodemailer from 'nodemailer'
@@ -80,10 +81,9 @@ const handler = NextAuth({
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        const { email, password } = credentials as {
-          email: string
-          password: string
-        }
+        if (!credentials) throw new Error('No credentials provided')
+
+        const { email, password } = credentials
 
         if (!email || !password || typeof email !== 'string' || typeof password !== 'string') {
           throw new Error('Invalid credentials')
@@ -93,7 +93,7 @@ const handler = NextAuth({
 
         await connectDB()
 
-        const user = (await User.findOne({ email }).exec()) as (IUser & { _id: { toString: () => string } }) | null
+        const user = (await UserModel.findOne({ email }).exec()) as (IUser & { _id: { toString: () => string } }) | null
         if (!user) throw new Error('User not found')
         if (!user.password) throw new Error('This account has no password set')
 
@@ -128,14 +128,14 @@ const handler = NextAuth({
         try {
           await connectDB()
 
-          const exists = await User.findOne({ email: user.email }).exec()
+          const exists = await UserModel.findOne({ email: user.email }).exec()
           if (!exists) {
             if (!user.name || !user.email) {
               console.warn('[SignIn Warning] Google user missing name or email:', user)
               return false
             }
 
-            const newUser = await User.create({
+            const newUser = await UserModel.create({
               name: user.name,
               email: user.email,
               role: 'client',
@@ -155,18 +155,22 @@ const handler = NextAuth({
 
     async jwt({ token, user }) {
       if (user) {
-        token.id = (user as any).id
-        token.name = (user as any).name
-        token.email = (user as any).email
-        token.lastname = (user as any).lastname || ''
-        token.company = (user as any).company || ''
-        token.phone = (user as any).phone || ''
-        token.bio = (user as any).bio || ''
-        token.language = (user as any).language || ''
-        token.avatar = (user as any).avatar || null
-        token.role = ['admin', 'client'].includes((user as any).role) ? (user as any).role : 'client'
-        token.isEmailVerified = (user as any).isEmailVerified ?? false
-        token.isPhoneVerified = (user as any).isPhoneVerified ?? false
+        // Mejor tipado para user
+        token.id = (user as { id: string }).id
+        token.name = (user as { name: string }).name
+        token.email = (user as { email: string }).email
+        token.lastname = (user as { lastname?: string }).lastname || ''
+        token.company = (user as { company?: string }).company || ''
+        token.phone = (user as { phone?: string }).phone || ''
+        token.bio = (user as { bio?: string }).bio || ''
+        token.language = (user as { language?: string }).language || ''
+        token.avatar = (user as { avatar?: string | null }).avatar || null
+        token.role =
+          ['admin', 'client'].includes((user as { role: string }).role)
+            ? (user as { role: 'client' | 'admin' }).role
+            : 'client'
+        token.isEmailVerified = (user as { isEmailVerified?: boolean }).isEmailVerified ?? false
+        token.isPhoneVerified = (user as { isPhoneVerified?: boolean }).isPhoneVerified ?? false
       }
       return token
     },
@@ -177,6 +181,7 @@ const handler = NextAuth({
         session.user.id = token.id as string
         session.user.email = token.email as string
         session.user.name = token.name as string
+        // Aquí agregamos las propiedades extras
         ;(session.user as any).lastname = token.lastname
         ;(session.user as any).company = token.company
         ;(session.user as any).phone = token.phone

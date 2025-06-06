@@ -1,5 +1,3 @@
-// src/app/api/stripe/create-setup-intent/route.ts
-
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth/auth'
@@ -11,7 +9,9 @@ import { Types } from 'mongoose'
 const stripeSecret = process.env.STRIPE_SECRET_KEY
 if (!stripeSecret) throw new Error('Missing STRIPE_SECRET_KEY')
 
-const stripe = new Stripe(stripeSecret)
+const stripe = new Stripe(stripeSecret, {
+  apiVersion: '2025-05-28.basil',
+})
 
 export async function POST() {
   try {
@@ -29,7 +29,6 @@ export async function POST() {
 
     const userId = (user._id as Types.ObjectId).toString()
 
-    // ✅ Reutilizar stripeCustomerId si ya existe
     let customerId = user.stripeCustomerId
     if (!customerId) {
       const customer = await stripe.customers.create({
@@ -48,8 +47,8 @@ export async function POST() {
     })
 
     return NextResponse.json({ clientSecret: setupIntent.client_secret })
-  } catch (err: any) {
-    console.error('Stripe SetupIntent Error:', err)
+  } catch (err) {
+    console.error('Stripe SetupIntent Error:', err instanceof Error ? err.message : err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
