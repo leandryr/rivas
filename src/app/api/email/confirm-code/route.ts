@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 
     const storedCode = user.settings?.emailVerificationCode
     const expiresAt = user.settings?.emailVerificationExpires
-      ? new Date(user.settings.emailVerificationExpires)
+      ? new Date(String(user.settings.emailVerificationExpires))
       : null
 
     if (!storedCode || !expiresAt) {

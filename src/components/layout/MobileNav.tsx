@@ -35,7 +35,9 @@ export default function MobileNav() {
         const res = await fetch('/api/users/me')
         if (!res.ok) throw new Error('Failed to fetch user data')
         const json = await res.json()
-        const user = json.user
+        const user = json.user as {
+          isEmailVerified?: boolean
+        }
         setIsEmailVerified(!!user?.isEmailVerified)
       } catch {
         setIsEmailVerified(false)
@@ -45,7 +47,7 @@ export default function MobileNav() {
     fetchUser()
   }, [])
 
-  const handleRestrictedClick = (e: React.MouseEvent) => {
+  const handleRestrictedClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     setShowToast(true)
     setTimeout(() => setShowToast(false), 4000)

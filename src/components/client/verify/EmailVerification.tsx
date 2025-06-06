@@ -1,92 +1,100 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { CheckCircleIcon, MailIcon } from 'lucide-react'
+import { useEffect, useState } from 'react';
+import { CheckCircleIcon, MailIcon } from 'lucide-react';
 
 interface Props {
-  email: string
-  onVerified: () => void
+  email: string;
+  onVerified: () => void;
+}
+
+interface UserResponse {
+  user?: {
+    isEmailVerified?: boolean;
+  };
 }
 
 export default function EmailVerification({ email, onVerified }: Props) {
-  const [emailVerified, setEmailVerified] = useState(false)
-  const [emailStatusLoading, setEmailStatusLoading] = useState(true)
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [emailStatusLoading, setEmailStatusLoading] = useState(true);
 
-  const [codeSent, setCodeSent] = useState(false)
-  const [code, setCode] = useState('')
-  const [message, setMessage] = useState<string | null>(null)
-  const [submitting, setSubmitting] = useState(false)
-  const [timer, setTimer] = useState(0)
+  const [codeSent, setCodeSent] = useState(false);
+  const [code, setCode] = useState('');
+  const [message, setMessage] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [timer, setTimer] = useState(0);
 
   useEffect(() => {
     const checkStatus = async () => {
       try {
-        const res = await fetch('/api/users/me')
-        const json = await res.json()
-        setEmailVerified(!!json.user?.isEmailVerified)
+        const res = await fetch('/api/users/me');
+        const json: UserResponse = await res.json();
+        setEmailVerified(!!json.user?.isEmailVerified);
       } catch {
-        setEmailVerified(false)
+        setEmailVerified(false);
       } finally {
-        setEmailStatusLoading(false)
+        setEmailStatusLoading(false);
       }
-    }
+    };
 
-    checkStatus()
-  }, [])
+    checkStatus();
+  }, []);
 
   useEffect(() => {
     if (codeSent && timer > 0) {
       const interval = setInterval(() => {
         setTimer((prev) => {
-          if (prev <= 1) clearInterval(interval)
-          return prev - 1
-        })
-      }, 1000)
-      return () => clearInterval(interval)
+          if (prev <= 1) clearInterval(interval);
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(interval);
     }
-  }, [codeSent, timer])
+  }, [codeSent, timer]);
 
   const handleSendCode = async () => {
-    if (timer > 0) return
+    if (timer > 0) return;
 
     try {
-      setMessage(null)
-      const res = await fetch('/api/email/send-code', { method: 'POST' })
-      if (!res.ok) throw new Error('Failed to send code')
+      setMessage(null);
+      const res = await fetch('/api/email/send-code', { method: 'POST' });
+      if (!res.ok) throw new Error('Failed to send code');
 
-      setCodeSent(true)
-      setTimer(59)
-      setMessage('Verification code sent to your email.')
+      setCodeSent(true);
+      setTimer(59);
+      setMessage('📧 Verification code sent to your email.');
     } catch {
-      setMessage('❌ Error sending email. Try again.')
+      setMessage('❌ Error sending email. Try again.');
     }
-  }
+  };
 
   const handleConfirmCode = async () => {
-    if (!code.trim()) return setMessage('Please enter the code.')
+    if (!code.trim()) {
+      setMessage('⚠️ Please enter the code.');
+      return;
+    }
 
     try {
-      setSubmitting(true)
+      setSubmitting(true);
       const res = await fetch('/api/email/confirm-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code }),
-      })
+      });
 
-      if (!res.ok) {
-        const json = await res.json()
-        throw new Error(json.error || 'Verification failed')
-      }
+      const json = await res.json();
 
-      setEmailVerified(true)
-      setMessage('✅ Email successfully verified.')
-      onVerified()
+      if (!res.ok) throw new Error(json.error || 'Verification failed');
+
+      setEmailVerified(true);
+      setMessage('✅ Email successfully verified.');
+      onVerified();
     } catch (err: any) {
-      setMessage(`❌ ${err.message}`)
+      setMessage(`❌ ${err.message}`);
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="space-y-4">
@@ -157,5 +165,5 @@ export default function EmailVerification({ email, onVerified }: Props) {
         </p>
       )}
     </div>
-  )
+  );
 }

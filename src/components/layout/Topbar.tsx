@@ -10,7 +10,9 @@ export default function TopbarDesktop() {
   const [mounted, setMounted] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
-  useEffect(() => setMounted(true), [])
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark')
 
@@ -47,17 +49,39 @@ export default function TopbarDesktop() {
         {/* Profile menu */}
         <div className="relative">
           <button
-            onClick={() => setMenuOpen(!menuOpen)}
+            onClick={() => setMenuOpen(prev => !prev)}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+            aria-label="Toggle profile menu"
           >
             <UserIcon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
           </button>
+
           {menuOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2 z-50">
-              <a href="/client/profile" className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200">My Profile</a>
-              <a href="/client/verify" className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200">Verifications</a>
-              <a href="/client/payments" className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200">Payments</a>
-              <a href="/client/subscription" className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200">Subscription</a>
+              <a
+                href="/client/profile"
+                className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
+              >
+                My Profile
+              </a>
+              <a
+                href="/client/verify"
+                className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
+              >
+                Verifications
+              </a>
+              <a
+                href="/client/payments"
+                className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
+              >
+                Payments
+              </a>
+              <a
+                href="/client/subscription"
+                className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
+              >
+                Subscription
+              </a>
               <button
                 onClick={() => signOut()}
                 className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"

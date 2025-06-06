@@ -11,7 +11,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { phone, isPhoneVerified, isEmailVerified } = await req.json();
+    const body = await req.json();
+    const { phone, isPhoneVerified, isEmailVerified } = body;
+
 
     if (!isPhoneVerified || !isEmailVerified) {
       return NextResponse.json({ error: 'Both verifications required.' }, { status: 400 });

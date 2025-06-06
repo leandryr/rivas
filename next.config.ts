@@ -1,10 +1,10 @@
-/** @type {import('next').NextConfig} */
+// next.config.js
 const nextConfig = {
-  experimental: {
-    allowedDevOrigins: ['http://192.168.1.42:3000'],
-  },
   images: {
     domains: ['res.cloudinary.com'],
+  },
+  env: {
+    STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
   },
 };
 

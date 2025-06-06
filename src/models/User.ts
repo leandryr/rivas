@@ -1,4 +1,3 @@
-// src/models/User.ts
 import { Schema, model, models, Model, Document } from 'mongoose';
 
 export interface IUser extends Document {
@@ -12,7 +11,8 @@ export interface IUser extends Document {
   phone?: string;
   isPhoneVerified?: boolean;
   isEmailVerified?: boolean;
-  hasValidPaymentMethod?: boolean; // <-- nuevo campo
+  hasValidPaymentMethod?: boolean;
+  stripeCustomerId?: string | null;
   avatar?: string;
   bio?: string;
   language?: string;
@@ -21,7 +21,7 @@ export interface IUser extends Document {
     sms: boolean;
   };
   theme?: 'light' | 'dark';
-  settings?: Record<string, any>;
+  settings?: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -47,6 +47,7 @@ const UserSchema = new Schema<IUser>(
     isPhoneVerified:   { type: Boolean, default: false },
     isEmailVerified:   { type: Boolean, default: false },
     hasValidPaymentMethod: { type: Boolean, default: false }, // <-- nuevo campo con default
+    stripeCustomerId:  { type: String, default: null },       // <-- agregado aquí
     avatar:            { type: String },
     bio:               { type: String },
     language:          { type: String },

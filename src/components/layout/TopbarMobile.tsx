@@ -35,7 +35,12 @@ export default function TopbarMobile() {
         const res = await fetch('/api/users/me')
         if (!res.ok) throw new Error('Failed to fetch user')
         const json = await res.json()
-        const user = json.user
+        const user = json.user as {
+          name?: string
+          lastname?: string
+          isEmailVerified?: boolean
+          hasValidPaymentMethod?: boolean
+        }
 
         const name =
           user?.lastname && user?.name

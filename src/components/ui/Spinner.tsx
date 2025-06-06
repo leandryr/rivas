@@ -1,5 +1,10 @@
-// components/Spinner.tsx
-export default function Spinner({ label = 'Loading...' }: { label?: string }) {
+import { FC } from 'react'
+
+interface SpinnerProps {
+  label?: string
+}
+
+const Spinner: FC<SpinnerProps> = ({ label = 'Loading...' }) => {
   return (
     <div className="flex flex-col items-center justify-center py-10 text-center">
       <div
@@ -10,3 +15,5 @@ export default function Spinner({ label = 'Loading...' }: { label?: string }) {
     </div>
   )
 }
+
+export default Spinner

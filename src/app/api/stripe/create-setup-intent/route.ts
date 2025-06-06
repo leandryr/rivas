@@ -8,13 +8,10 @@ import User from '@/models/User'
 import Stripe from 'stripe'
 import { Types } from 'mongoose'
 
-//  ❌ Esto causaba el error de TS:
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-//   apiVersion: '2022-11-15',
-// });
+const stripeSecret = process.env.STRIPE_SECRET_KEY
+if (!stripeSecret) throw new Error('Missing STRIPE_SECRET_KEY')
 
-// ✅ En su lugar, basta con no pasar apiVersion:
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+const stripe = new Stripe(stripeSecret)
 
 export async function POST() {
   try {
@@ -30,19 +27,23 @@ export async function POST() {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    // Cast explícito para evitar el “user._id is unknown”
     const userId = (user._id as Types.ObjectId).toString()
 
-    const customer = await stripe.customers.create({
-      email: user.email,
-      name: user.name + (user.lastname ? ` ${user.lastname}` : ''),
-      metadata: {
-        userId, // ya es string válido
-      },
-    })
+    // ✅ Reutilizar stripeCustomerId si ya existe
+    let customerId = user.stripeCustomerId
+    if (!customerId) {
+      const customer = await stripe.customers.create({
+        email: user.email,
+        name: user.name + (user.lastname ? ` ${user.lastname}` : ''),
+        metadata: { userId },
+      })
+      customerId = customer.id
+      user.stripeCustomerId = customerId
+      await user.save()
+    }
 
     const setupIntent = await stripe.setupIntents.create({
-      customer: customer.id,
+      customer: customerId,
       payment_method_types: ['card'],
     })
 

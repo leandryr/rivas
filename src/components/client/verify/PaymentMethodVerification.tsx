@@ -11,7 +11,11 @@ interface Props {
   onVerified: () => void;
 }
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+interface SetupIntentResponse {
+  clientSecret: string | null;
+}
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
 
 export default function PaymentMethodVerification({ isVerified, onVerified }: Props) {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -21,12 +25,18 @@ export default function PaymentMethodVerification({ isVerified, onVerified }: Pr
     if (!isVerified) {
       const fetchSetupIntent = async () => {
         setLoading(true);
-        const res = await fetch('/api/stripe/create-setup-intent', { method: 'POST' });
-        const data = await res.json();
-        if (data.clientSecret) {
+        try {
+          const res = await fetch('/api/stripe/create-setup-intent', {
+            method: 'POST',
+          });
+          const data: SetupIntentResponse = await res.json();
           setClientSecret(data.clientSecret);
+        } catch (error) {
+          console.error('Failed to fetch setup intent:', error);
+          setClientSecret(null);
+        } finally {
+          setLoading(false);
         }
-        setLoading(false);
       };
       fetchSetupIntent();
     }
@@ -42,10 +52,7 @@ export default function PaymentMethodVerification({ isVerified, onVerified }: Pr
         <p className="text-gray-500">Initializing Stripe…</p>
       ) : clientSecret ? (
         <Elements stripe={stripePromise} options={{ clientSecret }}>
-          <SetupForm
-            clientSecret={clientSecret}
-            onSuccess={onVerified}
-          />
+          <SetupForm clientSecret={clientSecret} onSuccess={onVerified} />
         </Elements>
       ) : (
         <p className="text-red-600">😕 Could not initialize Stripe.</p>

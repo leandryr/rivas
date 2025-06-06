@@ -1,7 +1,12 @@
 // src/components/client/verify/SetupForm.tsx
 'use client';
 
-import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import {
+  CardElement,
+  useStripe,
+  useElements,
+} from '@stripe/react-stripe-js';
+import { StripeCardElement } from '@stripe/stripe-js';
 import { useState } from 'react';
 
 interface Props {
@@ -15,7 +20,7 @@ export default function SetupForm({ onSuccess, clientSecret }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -26,14 +31,13 @@ export default function SetupForm({ onSuccess, clientSecret }: Props) {
       return;
     }
 
-    const cardElement = elements.getElement(CardElement);
+    const cardElement = elements.getElement(CardElement) as StripeCardElement | null;
     if (!cardElement) {
       setError('Card element not found.');
       setLoading(false);
       return;
     }
 
-    // Confirmar el SetupIntent usando el clientSecret recibido
     const { error: stripeError, setupIntent } = await stripe.confirmCardSetup(clientSecret, {
       payment_method: {
         card: cardElement,
@@ -43,7 +47,6 @@ export default function SetupForm({ onSuccess, clientSecret }: Props) {
     if (stripeError) {
       setError(stripeError.message || 'Something went wrong');
     } else if (setupIntent && setupIntent.status === 'succeeded') {
-      // TODO: aquí informamos al padre que la verificación fue exitosa
       onSuccess();
     }
 

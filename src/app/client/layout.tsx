@@ -3,6 +3,7 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+
 import ClientSidebar from '@/components/layout/ClientSidebar'
 import MobileNav from '@/components/layout/MobileNav'
 import TopbarDesktop from '@/components/layout/Topbar'
@@ -40,20 +41,30 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   return (
     <>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
-        <div className="flex flex-col md:flex-row">
+        <div className="flex flex-col md:flex-row min-h-screen">
+          {/* Sidebar (desktop only) */}
           <ClientSidebar />
-          <div className="flex flex-col flex-1 pb-14 md:pb-0">
+
+          {/* Main content */}
+          <div className="flex flex-col flex-1">
+            {/* Topbars */}
             <div className="md:hidden">
               <TopbarMobile />
             </div>
             <div className="hidden md:block">
               <TopbarDesktop />
             </div>
-            <main className="flex-1 p-6">{children}</main>
+
+            {/* Page content */}
+            <main className="flex-1 p-6 overflow-x-hidden">{children}</main>
           </div>
         </div>
+
+        {/* Mobile bottom nav */}
         <MobileNav />
       </div>
+
+      {/* Global toast notifications */}
       <Toaster position="top-right" />
     </>
   )

@@ -1,76 +1,97 @@
 'use client';
 
-import { useEffect, useState } from 'react'
-import { signIn, useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import Image from 'next/image'
+import { useEffect, useState } from 'react';
+import { signIn, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+
+interface RegisterForm {
+  name: string;
+  lastname: string;
+  company: string;
+  email: string;
+  password: string;
+}
+
+interface ApiResponse {
+  ok?: boolean;
+  role?: 'admin' | 'client';
+  error?: string;
+}
 
 export default function RegisterPage() {
-  const router = useRouter()
-  const { data: session, status } = useSession()
-  const [form, setForm] = useState({
+  const router = useRouter();
+  const { data: session, status } = useSession();
+
+  const [form, setForm] = useState<RegisterForm>({
     name: '',
     lastname: '',
     company: '',
     email: '',
     password: '',
-  })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  });
+
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (status === 'authenticated') {
       fetch('/api/auth/validate-session')
         .then((res) => res.json())
-        .then((json) => {
+        .then((json: ApiResponse) => {
           if (json.ok && json.role === 'admin') {
-            router.replace('/admin')
+            router.replace('/admin');
           } else if (json.ok && json.role === 'client') {
-            router.replace('/client')
+            router.replace('/client');
           }
         })
-        .catch(() => {})
+        .catch(() => {});
     }
-  }, [status, session, router])
+  }, [status, session, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    })
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
 
-    const data = await res.json()
-    if (!res.ok) {
-      setError(data.error || 'Registration failed')
-      setLoading(false)
-      return
+      const data: ApiResponse = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Registration failed');
+      }
+
+      const login = await signIn('credentials', {
+        redirect: false,
+        email: form.email,
+        password: form.password,
+      });
+
+      if (login?.error) {
+        router.push('/login');
+      } else {
+        router.push('/client');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Unexpected error');
+    } finally {
+      setLoading(false);
     }
-
-    const login = await signIn('credentials', {
-      redirect: false,
-      email: form.email,
-      password: form.password,
-    })
-
-    if (login?.error) {
-      router.push('/login')
-    } else {
-      router.push('/client')
-    }
-  }
+  };
 
   const handleGoogle = () => {
-    signIn('google', { callbackUrl: '/client' })
-  }
+    signIn('google', { callbackUrl: '/client' });
+  };
 
   if (status === 'loading') {
     return (
@@ -83,10 +104,10 @@ export default function RegisterPage() {
           <p className="text-gray-500 text-sm">Checking session…</p>
         </div>
       </div>
-    )
+    );
   }
 
-  if (status === 'authenticated') return null
+  if (status === 'authenticated') return null;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
@@ -212,5 +233,5 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

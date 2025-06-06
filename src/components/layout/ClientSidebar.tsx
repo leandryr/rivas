@@ -46,7 +46,10 @@ export default function ClientSidebar() {
       try {
         const res = await fetch('/api/users/me');
         const json = await res.json();
-        const user = json.user;
+        const user = json.user as {
+          avatar?: string;
+          isEmailVerified?: boolean;
+        };
 
         const avatarFromDB = user?.avatar || '';
         if (avatarFromDB.startsWith('https://res.cloudinary.com')) {
@@ -69,7 +72,7 @@ export default function ClientSidebar() {
       ? session.user.image
       : fallbackImage);
 
-  const handleRestrictedClick = (e: React.MouseEvent) => {
+  const handleRestrictedClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setShowToast(true);
     setTimeout(() => setShowToast(false), 4000);

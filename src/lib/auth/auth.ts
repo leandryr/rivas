@@ -5,6 +5,8 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import User from '@/models/User'
 import connectDB from '@/lib/db'
+import { JWT } from 'next-auth/jwt'
+// import { AdapterUser } from 'next-auth/adapters' 👈 eliminado porque ya no lo necesitamos directamente
 
 // Tipado que refleja los campos mínimos que almacenamos en el token/jwt:
 interface IUserToken {
@@ -29,7 +31,7 @@ export const authOptions: AuthOptions = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials) {
+      async authorize(credentials): Promise<IUserToken | null> {
         // Conectar a MongoDB
         await connectDB()
 
@@ -84,14 +86,20 @@ export const authOptions: AuthOptions = {
      * Este callback formatea la sesión que el frontend recibirá en useSession().
      * Copiamos los datos del token a session.user.
      */
-    async session({ session, token }) {
+    async session({
+      session,
+      token,
+    }: {
+      session: any
+      token: JWT
+    }) {
       if (session.user && token?.email) {
-        session.user.id = token.id as string
-        session.user.name = token.name as string
-        session.user.email = token.email as string
+        session.user.id = token.id
+        session.user.name = token.name
+        session.user.email = token.email
         session.user.role = token.role as 'admin' | 'client'
-        session.user.isEmailVerified = token.isEmailVerified as boolean
-        session.user.isPhoneVerified = token.isPhoneVerified as boolean
+        session.user.isEmailVerified = token.isEmailVerified
+        session.user.isPhoneVerified = token.isPhoneVerified
       }
       return session
     },
