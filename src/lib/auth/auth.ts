@@ -4,11 +4,11 @@ import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import User from '@/models/User'
-import connectDB from '@/lib/db'
 import { JWT } from 'next-auth/jwt'
-// import { AdapterUser } from 'next-auth/adapters' 👈 eliminado porque ya no lo necesitamos directamente
+import { Session } from 'next-auth'
+import connectDB from '@/lib/db'
 
-// Tipado que refleja los campos mínimos que almacenamos en el token/jwt:
+
 interface IUserToken {
   id: string
   name: string
@@ -32,21 +32,17 @@ export const authOptions: AuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials): Promise<IUserToken | null> {
-        // Conectar a MongoDB
         await connectDB()
 
         if (!credentials?.email || !credentials.password) return null
         const { email, password } = credentials as { email: string; password: string }
 
-        // Buscar usuario
         const user = await User.findOne({ email }).lean()
         if (!user || !user.password) return null
 
-        // Comparar contraseña
         const isValid = await bcrypt.compare(password, user.password)
         if (!isValid) return null
 
-        // Devuelve el shape que luego JWT incluirá en el token
         return {
           id: user._id.toString(),
           name: user.name,
@@ -54,21 +50,16 @@ export const authOptions: AuthOptions = {
           role: user.role,
           isEmailVerified: user.isEmailVerified ?? false,
           isPhoneVerified: user.isPhoneVerified ?? false,
-        } satisfies IUserToken
+        }
       },
     }),
   ],
 
   pages: {
-    signIn: '/login', // Ruta personalizada de login (opcional)
+    signIn: '/login',
   },
 
   callbacks: {
-    /**
-     * Este callback se ejecuta cuando se genera/actualiza el JWT.
-     * Aquí metemos en el token todos los campos que luego queremos exponer
-     * en session.user.
-     */
     async jwt({ token, user }) {
       if (user) {
         const u = user as IUserToken
@@ -82,24 +73,14 @@ export const authOptions: AuthOptions = {
       return token
     },
 
-    /**
-     * Este callback formatea la sesión que el frontend recibirá en useSession().
-     * Copiamos los datos del token a session.user.
-     */
-    async session({
-      session,
-      token,
-    }: {
-      session: any
-      token: JWT
-    }) {
-      if (session.user && token?.email) {
-        session.user.id = token.id
-        session.user.name = token.name
-        session.user.email = token.email
+    async session({ session, token }: { session: Session; token: JWT }) {
+      if (session.user && token.email) {
+        session.user.id = token.id as string
+        session.user.name = token.name as string
+        session.user.email = token.email as string
         session.user.role = token.role as 'admin' | 'client'
-        session.user.isEmailVerified = token.isEmailVerified
-        session.user.isPhoneVerified = token.isPhoneVerified
+        session.user.isEmailVerified = token.isEmailVerified as boolean
+        session.user.isPhoneVerified = token.isPhoneVerified as boolean
       }
       return session
     },
@@ -107,8 +88,7 @@ export const authOptions: AuthOptions = {
 
   session: {
     strategy: 'jwt',
-    // Ajusta maxAge/updateAge según tus necesidades
-    maxAge: 10 * 60, 
+    maxAge: 10 * 60,
     updateAge: 5 * 60,
   },
 
