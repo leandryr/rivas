@@ -1,6 +1,8 @@
+// src/app/api/auth/clients/projects/route.ts
+
 import connectDB from '@/lib/db'
-import { auth } from '@/auth'
-import Project from '@/models/Project'
+import { auth } from '@/lib/a/auth'
+import Project from '@/models/Project.model'
 import { NextResponse } from 'next/server'
 
 export async function GET() {

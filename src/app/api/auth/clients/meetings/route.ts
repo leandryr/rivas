@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth/auth'
 import connectDB from '@/lib/db'
 import Meeting from '@/models/Meeting.model'
-import Project from '@/models/Project'
+import Project from '@/models/Project.model'
 import User from '@/models/User'
 
 export async function POST(req: Request) {
