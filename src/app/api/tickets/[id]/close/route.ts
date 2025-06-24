@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth/auth'
 import connectDB from '@/lib/db'
 import Ticket from '@/models/Ticket'
 import User from '@/models/User'
-import { sendSupportEmail } from '@lib/sendSupportEmail'
+import { sendSupportEmail } from '@/lib/sendSupportEmail'
 
 export async function PATCH(
   _req: Request,
