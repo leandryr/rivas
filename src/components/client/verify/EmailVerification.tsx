@@ -62,7 +62,7 @@ export default function EmailVerification({ email, onVerified }: Props) {
 
       setCodeSent(true);
       setTimer(59);
-      setMessage('📧 Verification code sent to your email.');
+      setMessage(' Verification code sent to your email.');
     } catch {
       setMessage('❌ Error sending email. Try again.');
     }
@@ -87,7 +87,7 @@ export default function EmailVerification({ email, onVerified }: Props) {
       if (!res.ok) throw new Error(json.error || 'Verification failed');
 
       setEmailVerified(true);
-      setMessage('✅ Email successfully verified.');
+      setMessage('Email successfully verified.');
       onVerified();
     } catch (err: any) {
       setMessage(`❌ ${err.message}`);

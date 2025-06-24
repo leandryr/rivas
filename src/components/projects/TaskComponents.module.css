@@ -1,0 +1,77 @@
+/* src/components/projects/TaskComponents.module.css */
+
+/* Botón “Ver Tareas” */
+.button {
+  background-color: #10b981;
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.button:hover {
+  background-color: #059669;
+}
+
+/* Contenedor principal de la lista de tareas */
+.container {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background-color: #f9fafb;
+}
+
+/* Encabezado “Tareas asignadas:” */
+.heading {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+/* Mensaje de carga */
+.loading {
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+/* Mensaje de error */
+.error {
+  color: #dc2626;
+  font-size: 0.875rem;
+}
+
+/* Mensaje cuando no hay tareas */
+.empty {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* Lista sin viñetas */
+.list {
+  list-style: none;
+  padding-left: 0;
+}
+
+/* Cada elemento de la lista */
+.listItem {
+  margin-bottom: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  background-color: #ffffff;
+}
+
+/* Contenedor de título/estado */
+.itemHeader {
+  margin-bottom: 0.25rem;
+}
+
+/* Contenedor de fechas */
+.dates {
+  font-size: 0.875rem;
+  color: #6b7280;
+}

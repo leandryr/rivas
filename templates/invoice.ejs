@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    body { font-family: sans-serif; margin: 0; padding: 20px }
+    header { display: flex; justify-content: space-between; align-items: center }
+    header img { height: 50px }
+    .company-info { text-align: right; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px }
+    th, td { padding: 8px; border: 1px solid #ccc }
+    th { background: #f0f0f0 }
+    .totals { text-align: right; margin-top: 20px }
+    .footer { margin-top: 40px; font-size: 0.8em; color: #666 }
+  </style>
+</head>
+<body>
+  <header>
+    <div><img src="<%= company.logo %>" alt="Logo" /></div>
+    <div class="company-info">
+      <strong><%= company.name %></strong><br/>
+      <%= company.address %><br/>
+      <%= company.email %> | <%= company.phone %>
+    </div>
+  </header>
+
+  <h2>Invoice #: <%= quote.invoiceNumber %></h2>
+  <p>Date: <%= quote.invoiceDate.toLocaleDateString() %></p>
+
+  <table>
+    <thead>
+      <tr><th>Item</th><th>Price</th><th>Qty</th><th>Total</th></tr>
+    </thead>
+    <tbody>
+      <% quote.items.forEach(i => { %>
+      <tr>
+        <td><%= i.title %></td>
+        <td>$<%= i.price.toFixed(2) %></td>
+        <td>1</td>
+        <td>$<%= (i.price * (1 - (i.discount||0)/100)).toFixed(2) %></td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <div class="totals">
+    <p>Subtotal: $<%= quote.subtotal.toFixed(2) %></p>
+    <p>Tax: $<%= quote.taxAmount.toFixed(2) %></p>
+    <p><strong>Total: $<%= quote.total.toFixed(2) %></strong></p>
+  </div>
+
+  <div class="footer">
+    Thank you for your business!
+  </div>
+</body>
+</html>

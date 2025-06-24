@@ -10,6 +10,7 @@ type PublicUser = {
   name: string;
   lastname?: string;
   company?: string;
+  agencyName?: string;
   email: string;
   provider: 'credentials' | 'google' | 'github';
   phone?: string;
@@ -25,6 +26,13 @@ type PublicUser = {
   theme: 'light' | 'dark';
   createdAt: Date;
   updatedAt: Date;
+  hasValidPaymentMethod: boolean;
+  paymentMethodDetails?: {
+    last4?: string;
+    brand?: string;
+    expMonth?: number;
+    expYear?: number;
+  };
 };
 
 type ErrorResponse = { message: string };
@@ -122,27 +130,35 @@ export async function GET(request: NextRequest) {
   }
 
   // 4) Build public subset
-  const publicUser: PublicUser = {
-    id: userDoc.id,
-    name: userDoc.name,
-    lastname: userDoc.lastname,
-    company: userDoc.company,
-    email: userDoc.email,
-    provider: userDoc.provider,
-    phone: userDoc.phone,
-    isEmailVerified: userDoc.isEmailVerified ?? false,
-    isPhoneVerified: userDoc.isPhoneVerified ?? false,
-    avatar: userDoc.avatar,
-    bio: userDoc.bio,
-    language: userDoc.language,
-    notifications: {
-      email: userDoc.notifications?.email ?? true,
-      sms: userDoc.notifications?.sms ?? false,
-    },
-    theme: userDoc.theme ?? 'light',
-    createdAt: userDoc.createdAt,
-    updatedAt: userDoc.updatedAt,
-  };
+const publicUser: PublicUser = {
+  id: userDoc.id,
+  name: userDoc.name,
+  lastname: userDoc.lastname,
+  company: userDoc.company,
+  agencyName: userDoc.agencyName,
+  email: userDoc.email,
+  provider: userDoc.provider,
+  phone: userDoc.phone,
+  isEmailVerified: userDoc.isEmailVerified ?? false,
+  isPhoneVerified: userDoc.isPhoneVerified ?? false,
+  avatar: userDoc.avatar,
+  bio: userDoc.bio,
+  language: userDoc.language,
+  notifications: {
+    email: userDoc.notifications?.email ?? true,
+    sms: userDoc.notifications?.sms ?? false,
+  },
+  theme: userDoc.theme ?? 'light',
+  createdAt: userDoc.createdAt,
+  updatedAt: userDoc.updatedAt,
+  hasValidPaymentMethod: userDoc.hasValidPaymentMethod ?? false,
+  paymentMethodDetails: {
+    last4: userDoc.paymentMethodDetails?.last4,
+    brand: userDoc.paymentMethodDetails?.brand,
+    expMonth: userDoc.paymentMethodDetails?.exp_month,
+    expYear: userDoc.paymentMethodDetails?.exp_year,
+  },
+};
 
   return NextResponse.json<SuccessResponse>({ user: publicUser }, { status: 200 });
 }
@@ -197,6 +213,7 @@ export async function PUT(request: NextRequest) {
     name?: unknown;
     lastname?: unknown;
     company?: unknown;
+    agencyName?: unknown;
     phone?: unknown;
     avatar?: unknown;
     bio?: unknown;
@@ -233,6 +250,10 @@ export async function PUT(request: NextRequest) {
       typeof body.company === 'string'
         ? (body.company as string).trim()
         : undefined,
+    agencyName:
+    typeof body.agencyName === 'string'
+      ? (body.agencyName as string).trim()
+      : undefined,
     phone:
       typeof body.phone === 'string' ? (body.phone as string).trim() : undefined,
     avatar:
@@ -304,6 +325,7 @@ export async function PUT(request: NextRequest) {
       theme: updatedDoc.theme ?? 'light',
       createdAt: updatedDoc.createdAt,
       updatedAt: updatedDoc.updatedAt,
+      hasValidPaymentMethod: updatedDoc.hasValidPaymentMethod ?? false,
     };
 
     return NextResponse.json<SuccessResponse>(

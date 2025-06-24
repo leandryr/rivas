@@ -1,0 +1,112 @@
+/* src/app/(dashboard)/client/projects/Projects.module.css */
+
+/* -------- Contenedor principal -------- */
+.container {
+  padding: 2rem; /* equivale a p-8 */
+}
+
+/* -------- Header con título y botón -------- */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem; /* mb-6 */
+}
+
+.title {
+  font-size: 1.5rem;  /* text-2xl */
+  font-weight: 600;   /* font-semibold */
+}
+
+.addButton {
+  background-color: #2563eb; /* bg-blue-600 */
+  color: #ffffff;            /* text-white */
+  padding: 0.5rem 1rem;       /* px-4 py-2 */
+  border-radius: 0.25rem;     /* rounded */
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.addButton:hover {
+  background-color: #1e40af; /* hover:bg-blue-700 */
+  color: #ffffff;
+}
+
+/* -------- Mensaje cuando no hay proyectos -------- */
+.empty {
+  text-align: center;
+  color: #6b7280; /* text-gray-500 */
+}
+
+.link {
+  color: #2563eb; /* text-blue-600 */
+  text-decoration: underline;
+}
+
+/* -------- Tabla -------- */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff; /* bg-white */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* shadow */
+  border-radius: 0.5rem; /* rounded-lg */
+  overflow: hidden;
+}
+
+/* -------- Encabezado de la tabla -------- */
+.thead {
+  background-color: #f9fafb; /* bg-gray-50 */
+}
+
+/* -------- Celdas de encabezado -------- */
+.th {
+  padding: 0.75rem 1rem; /* px-4 py-3 */
+  border: 1px solid #e5e7eb; /* border */
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* -------- Filas con efecto hover -------- */
+.rowHover:hover {
+  background-color: #f9fafb; /* hover:bg-gray-50 */
+}
+
+/* -------- Celdas de datos -------- */
+.td {
+  padding: 0.75rem 1rem; /* px-4 py-3 */
+  border: 1px solid #e5e7eb; /* border */
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+/* -------- Celda que envuelve el TaskList -------- */
+.taskListWrapper {
+  padding: 0;           /* anulamos padding de td */
+  border: none;         /* anulamos border de td */
+  background-color: transparent;
+}
+
+/* -------- Contenido interno de la celda TaskList -------- */
+.taskListWrapper > div {
+  margin: 1rem 0;       /* separemos visualmente del borde superior e inferior */
+}
+
+/* -------- Acciones (Ver detalles + Ver Tareas) -------- */
+.actionsCell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* espacio entre “Ver detalles” y “Ver Tareas” */
+}
+
+.detailsLink {
+  color: #2563eb;        /* text-blue-600 */
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.detailsLink:hover {
+  text-decoration: underline;
+}

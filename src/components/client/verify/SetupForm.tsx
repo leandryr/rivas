@@ -1,4 +1,3 @@
-// src/components/client/verify/SetupForm.tsx
 'use client';
 
 import {
@@ -48,6 +47,13 @@ export default function SetupForm({ onSuccess, clientSecret }: Props) {
       setError(stripeError.message || 'Something went wrong');
     } else if (setupIntent && setupIntent.status === 'succeeded') {
       onSuccess();
+
+      // 👇 Agregado: guarda el payment method en el backend
+      await fetch('/api/users/save-payment-method', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentMethodId: setupIntent.payment_method }),
+      });
     }
 
     setLoading(false);

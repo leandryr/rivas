@@ -1,0 +1,74 @@
+.profile {
+  position: relative;
+}
+
+.avatarWrapper {
+  cursor: pointer;
+}
+
+.avatar {
+  border-radius: 50%;
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  margin-top: 0.5rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+  padding: 1rem;
+  min-width: 200px;
+  z-index: 100;
+}
+
+.email {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.menu button,
+.menu a {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-size: 0.875rem;
+  padding: 0.5rem 0;
+  background: none;
+  border: none;
+  color: #111827;
+  cursor: pointer;
+}
+
+.menu button:hover,
+.menu a:hover {
+  background-color: #f9fafb;
+}
+
+.hr {
+  margin: 0.5rem 0;
+  border: none;
+  border-top: 1px solid #e5e7eb;
+}
+
+.googleStatus {
+  font-size: 0.8rem;
+  color: #6b7280;
+  padding-top: 0.5rem;
+}
+.disconnectButton {
+  margin-top: 1rem;
+  background-color: #ef4444;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+.disconnectButton:hover {
+  background-color: #dc2626;
+}

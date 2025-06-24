@@ -1,0 +1,162 @@
+/* Contenedor principal */
+.container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  font-family: system-ui, sans-serif;
+}
+
+/* Contenido: formulario y barra lateral */
+.content {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 2rem;
+}
+
+/* Para pantallas pequeñas, una columna */
+@media (max-width: 800px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Formulario */
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Contenedor de botones */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* Botón Siguiente / Continuar */
+.nextBtn {
+  padding: 0.6rem 1.2rem;
+  background-color: #0070f3;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.nextBtn:hover:not(:disabled) {
+  background-color: #005bb5;
+}
+
+.nextBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Botón Atrás */
+.backBtn {
+  padding: 0.6rem 1.2rem;
+  background-color: #e2e8f0;
+  color: #333333;
+  border: none;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.backBtn:hover:not(:disabled) {
+  background-color: #cbd5e1;
+}
+
+.backBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Botón Crear Proyecto */
+.submitBtn {
+  padding: 0.6rem 1.5rem;
+  background-color: #10b981;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background-color: #059669;
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Toast de éxito / error */
+.successToast {
+  margin-top: 1.5rem;
+  padding: 0.75rem 1rem;
+  background-color: #f0fdf4;
+  border: 1px solid #10b981;
+  border-radius: 0.375rem;
+  color: #065f46;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Barra lateral de tips */
+.sidebar {
+  width: 100%;
+  position: sticky;
+  top: 2rem;
+}
+
+/* Caja de información */
+.infoBox {
+  display: flex;
+  align-items: flex-start;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+/* Icono “?” */
+.infoIcon {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background-color: #6366f1;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 0.75rem;
+  font-size: 0.875rem;
+}
+
+/* Texto de tips */
+.infoText {
+  color: #1f2937;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+/* Mensaje de validación de error */
+.errorText {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}

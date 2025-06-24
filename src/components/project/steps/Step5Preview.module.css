@@ -1,0 +1,22 @@
+.heading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #111827;
+}
+
+.previewBox {
+  background-color: #f9fafb;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  color: #374151;
+}
+
+.previewBox p {
+  margin-bottom: 0.75rem;
+}
+
+.previewBox strong {
+  color: #111827;
+}

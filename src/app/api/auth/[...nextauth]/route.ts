@@ -122,36 +122,44 @@ const handler = NextAuth({
     signIn: '/login',
   },
 
-  callbacks: {
-    async signIn({ user, account }) {
-      if (account?.provider === 'google') {
-        try {
-          await connectDB()
+callbacks: {
+  async signIn({ user, account }) {
+    if (account?.provider === 'google') {
+      try {
+        await connectDB()
 
-          const exists = await UserModel.findOne({ email: user.email }).exec()
-          if (!exists) {
-            if (!user.name || !user.email) {
-              console.warn('[SignIn Warning] Google user missing name or email:', user)
-              return false
-            }
-
-            const newUser = await UserModel.create({
-              name: user.name,
-              email: user.email,
-              role: 'client',
-              provider: 'google',
-            })
-
-            await sendWelcomeEmail(newUser.email, newUser.name)
-            console.info('[SignIn Info] User created and welcome email sent:', newUser.email)
+        const exists = await UserModel.findOne({ email: user.email }).exec()
+        if (!exists) {
+          if (!user.name || !user.email) {
+            console.warn('[SignIn Warning] Google user missing name or email:', user)
+            return false
           }
-        } catch (err) {
-          console.error('[SignIn Error]', { error: err, user, account })
-          return false
+
+          const [firstName, ...rest] = user.name.split(' ')
+          const lastName = rest.join(' ')
+
+          const newUser = await UserModel.create({
+            name: firstName,
+            lastname: lastName || '',
+            email: user.email,
+            avatar: user.image,
+            provider: 'google',
+            role: 'client',
+            isEmailVerified: false,
+            notifications: { email: true, sms: false },
+            theme: 'light',
+          })
+
+          await sendWelcomeEmail(newUser.email, newUser.name)
+          console.info('[SignIn Info] User created and welcome email sent:', newUser.email)
         }
+      } catch (err) {
+        console.error('[SignIn Error]', { error: err, user, account })
+        return false
       }
-      return true
-    },
+    }
+    return true
+  },
 
     async jwt({ token, user }) {
       if (user) {

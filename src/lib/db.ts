@@ -11,12 +11,11 @@ interface MongooseCache {
 }
 
 declare global {
-  // Evita múltiples conexiones en desarrollo
-  var mongoose: MongooseCache | undefined;
+  var _mongoose: MongooseCache | undefined;
 }
 
-const cached: MongooseCache = global.mongoose || { conn: null, promise: null };
-global.mongoose = cached;
+const cached: MongooseCache = globalThis._mongoose ?? { conn: null, promise: null };
+globalThis._mongoose = cached;
 
 export default async function connectDB(): Promise<typeof mongoose> {
   if (cached.conn) {

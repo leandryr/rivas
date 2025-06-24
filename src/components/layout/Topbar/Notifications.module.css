@@ -1,0 +1,21 @@
+.notificationBtn {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.bell {
+  filter: grayscale(0.4);
+}
+
+.badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+}

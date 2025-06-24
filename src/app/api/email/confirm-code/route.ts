@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth/auth'
-import dbConnect from '@/lib/db'
+import connectDB from '@/lib/db'
 import User from '@/models/User'
 import nodemailer from 'nodemailer'
 
 export async function POST(req: NextRequest) {
   try {
-    await dbConnect()
+    await connectDB()
 
     const session = await getServerSession(authOptions)
     if (!session?.user?.email) {

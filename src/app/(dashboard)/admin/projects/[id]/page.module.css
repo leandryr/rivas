@@ -1,0 +1,72 @@
+/* src/app/admin/projects/[id]/page.module.css */
+
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1.25rem;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  font-family: system-ui, sans-serif;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.backLink {
+  font-size: 0.9rem;
+  color: #6366f1;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+.section {
+  margin-bottom: 1.5rem;
+}
+
+.section h2 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.section p {
+  margin: 0.3rem 0;
+  color: #4b5563;
+}
+
+.section ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+  color: #4b5563;
+}
+
+.section a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.section a:hover {
+  text-decoration: underline;
+}
+
+.notFound {
+  text-align: center;
+  margin-top: 4rem;
+  color: #dc2626;
+  font-size: 1rem;
+}

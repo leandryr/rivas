@@ -111,12 +111,73 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  /* ✅ Animación genérica horizontal */
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* ✅ Carrusel para portfolio en desktop */
+  .animate-marquee-portfolio {
+    animation: marquee-portfolio 40s linear infinite;
+  }
+
+  @keyframes marquee-portfolio {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* ✅ Carrusel para portfolio en móvil */
+  .animate-marquee-portfolio-movil {
+    animation: marquee-portfolio-movil 22s linear infinite;
+  }
+
+  @keyframes marquee-portfolio-movil {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+}
+@media print {
+  /* 1. Quita los headers/sidebars/nav de tu app */
+  header, nav, aside, .sidebar, .topbar, .notifications, .print\\:hide {
+    display: none !important;
+  }
+
+  /* 2. Asegura que tu contenedor invoice ocupe todo el ancho */
+  .invoice-printable {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+
+  /* 3. Si quieres márgenes cero (pero muchos browsers los forzan) */
+  @page {
+    margin: 1cm; /* ajusta o pon 0 */
   }
 }
