@@ -1,6 +1,6 @@
 import { google } from 'googleapis'
 import User from '@models/User'
-import Meeting from '@/models/Meeting'
+import Meeting from '@/models/Meeting.model'
 
 export async function createMeetEvent(meetingId: string) {
   const meeting = await Meeting.findById(meetingId)

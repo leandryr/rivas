@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth/auth'
 import connectDB from '@/lib/db'
-import Meeting from '@/models/Meeting'
+import Meeting from '@/models/Meeting.model'
 import User from '@/models/User'
 import { NextResponse } from 'next/server'
 

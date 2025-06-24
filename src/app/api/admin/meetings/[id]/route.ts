@@ -1,6 +1,6 @@
 import connectDB from '@/lib/db'
 import { NextResponse } from 'next/server'
-import Meeting from '@/models/Meeting'
+import Meeting from '@/models/Meeting.model'
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   await connectDB()

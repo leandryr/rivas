@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth/auth'
 import connectDB from '@/lib/db'
-import Meeting from '@/models/Meeting'
+import Meeting from '@/models/Meeting.model'
 import Project from '@/models/Project'
 import User from '@/models/User'
 
