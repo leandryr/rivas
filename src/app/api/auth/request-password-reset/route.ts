@@ -30,7 +30,7 @@ export async function POST(req: Request) {
   await user.save();
 
   // 3. Generar HTML con estilo
-  const resetUrl = `http://localhost:3000/reset-password?token=${rawToken}&email=${email}`;
+  const resetUrl = `http://rivasdev.com/reset-password?token=${rawToken}&email=${email}`;
   const htmlEmail = `
     <div style="font-family:Arial, sans-serif; background:#f3f4f6; padding:40px;">
       <div style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:10px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.05);">

@@ -18,23 +18,18 @@ export default function NotificationsDropdown() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  // Carga inicial + polling cada 15s
   useEffect(() => {
-    let mounted = true;
-    const load = () =>
-      fetch('/api/notifications')
-        .then(r => r.json())
-        .then((data: Notif[]) => mounted && setNotifs(data))
-        .catch(() => {});
-    load();
-    const iv = setInterval(load, 15_000);
-    return () => {
-      mounted = false;
-      clearInterval(iv);
-    };
+    fetch('/api/notifications')
+      .then(r => r.json())
+      .then((data: Notif[]) => {
+        if (Array.isArray(data)) setNotifs(data);
+      })
+      .catch(() => {});
   }, []);
 
-  const unreadCount = notifs.filter(n => !n.read).length;
+  const unreadCount = Array.isArray(notifs)
+    ? notifs.filter(n => !n.read).length
+    : 0;
 
   const markAsRead = async (id: string) => {
     await fetch('/api/notifications', {
