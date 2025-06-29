@@ -1,43 +1,43 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSession }         from 'next-auth/react';
-import { useRouter }          from 'next/navigation';
-import toast                  from 'react-hot-toast';
-import { ChevronDown }        from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { ChevronDown } from 'lucide-react';
 
-import ImageUploadField       from '@/components/landing/ImageUploadField';
-import FeaturesForm           from '@/components/landing/FeaturesForm';
-import PortfolioForm          from '@/components/landing/PortfolioForm';
-import StatsForm              from '@/components/landing/StatsForm';
-import TestimonialsForm       from '@/components/landing/TestimonialsForm';
-import LogosForm              from '@/components/landing/LogosForm';
+import ImageUploadField from '@/components/landing/ImageUploadField';
+import FeaturesForm from '@/components/landing/FeaturesForm';
+import PortfolioForm from '@/components/landing/PortfolioForm';
+import StatsForm from '@/components/landing/StatsForm';
+import TestimonialsForm from '@/components/landing/TestimonialsForm';
+import LogosForm from '@/components/landing/LogosForm';
 
 export default function LandingSettingsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
-  const [config,  setConfig]  = useState<any>(null);
+  const [config, setConfig] = useState<any>(null);
 
-  // control de expandir/colapsar por sección
+  // expand/collapse control per section
   const [open, setOpen] = useState({
-    general:      false,
-    hero:         false,
-    features:     false,
-    portfolio:    false,
-    stats:        false,
+    general: false,
+    hero: false,
+    features: false,
+    portfolio: false,
+    stats: false,
     testimonials: false,
-    logos:        false,
-    about:        false,
-    social:       false,
-    contact:      false,
-    footer:       false,
+    logos: false,
+    about: false,
+    social: false,
+    contact: false,
+    footer: false,
   });
   const toggle = (section: keyof typeof open) =>
     setOpen(prev => ({ ...prev, [section]: !prev[section] }));
 
-  // carga inicial de la configuración
+  // initial load of configuration
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login');
@@ -47,18 +47,18 @@ export default function LandingSettingsPage() {
 
     (async () => {
       try {
-        const res  = await fetch('/api/landing-config');
+        const res = await fetch('/api/landing-config');
         const data = await res.json();
         setConfig(data);
       } catch {
-        toast.error('Error cargando configuración');
+        toast.error('Error loading configuration');
       } finally {
         setLoading(false);
       }
     })();
   }, [status, router]);
 
-  // guarda sólo la sección indicada y la cierra
+  // save only the indicated section and collapse it
   const saveSection = async (section: keyof typeof open, payload: any) => {
     try {
       const res = await fetch('/api/landing-config?slug=home', {
@@ -69,24 +69,24 @@ export default function LandingSettingsPage() {
       if (!res.ok) throw new Error();
       const updated = await res.json();
       setConfig(updated);
-      toast.success('Guardado con éxito');
-      //  ↓ Colapsar sección tras el guardado
+      toast.success('Section saved successfully');
+      // Collapse section after saving
       setOpen(prev => ({ ...prev, [section]: false }));
     } catch {
-      toast.error('Error guardando sección');
+      toast.error('Error saving section');
     }
   };
 
   if (loading)
     return (
       <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-        Cargando…
+        Loading…
       </div>
     );
   if (!config)
     return (
       <div className="p-8 text-center text-red-600">
-        No se pudo cargar la configuración.
+        Failed to load configuration.
       </div>
     );
 
@@ -95,10 +95,10 @@ export default function LandingSettingsPage() {
       <div className="w-full max-w-6xl bg-white dark:bg-gray-800 rounded-lg shadow p-8 space-y-6">
 
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
-          Configuración de Landing Page
+          Landing Page Settings
         </h1>
 
-        {/* ─── Sección: General ─────────────────────────────────────── */}
+        {/* ─── Section: General ─────────────────────────────────────── */}
         <div className="border-b pb-4">
           <button
             type="button"
@@ -115,14 +115,13 @@ export default function LandingSettingsPage() {
               }`}
             />
           </button>
-
           {open.general && (
             <form
               onSubmit={e => {
                 e.preventDefault();
                 const fd = new FormData(e.currentTarget);
                 saveSection('general', {
-                  logoUrl:      fd.get('logoUrl'),
+                  logoUrl: fd.get('logoUrl'),
                   primaryColor: fd.get('primaryColor'),
                 });
               }}
@@ -132,13 +131,13 @@ export default function LandingSettingsPage() {
                 <ImageUploadField
                   name="logoUrl"
                   initialUrl={config.logoUrl}
-                  label="Logo Principal"
-                  placeholderText="Sube o selecciona un logo"
+                  label="Main Logo"
+                  placeholderText="Upload or select a logo"
                   previewWidth={140}
                 />
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Color primario
+                    Primary Color
                   </label>
                   <input
                     type="text"
@@ -149,18 +148,17 @@ export default function LandingSettingsPage() {
                   />
                 </div>
               </div>
-
               <button
                 type="submit"
                 className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium"
               >
-                Guardar General
+                Save General
               </button>
             </form>
           )}
         </div>
 
-        {/* ─── Sección: Hero ─────────────────────────────────────────── */}
+        {/* ─── Section: Hero Section ───────────────────────────────── */}
         <div className="border-b pb-4">
           <button
             type="button"
@@ -168,7 +166,7 @@ export default function LandingSettingsPage() {
             className="flex items-center justify-between w-full"
           >
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
-              Sección Hero
+              Hero Section
             </h2>
             <ChevronDown
               size={20}
@@ -177,7 +175,6 @@ export default function LandingSettingsPage() {
               }`}
             />
           </button>
-
           {open.hero && (
             <form
               onSubmit={e => {
@@ -185,9 +182,9 @@ export default function LandingSettingsPage() {
                 const fd = new FormData(e.currentTarget);
                 saveSection('hero', {
                   hero: {
-                    backgroundImage:   fd.get('heroBg'),
-                    title:             fd.get('heroTitle'),
-                    subtitle:          fd.get('heroSubtitle'),
+                    backgroundImage: fd.get('heroBg'),
+                    title: fd.get('heroTitle'),
+                    subtitle: fd.get('heroSubtitle'),
                     primaryButtonText: fd.get('heroPrimaryButtonText'),
                     primaryButtonLink: fd.get('heroPrimaryButtonLink'),
                     secondaryButtonText: fd.get('heroSecondaryButtonText'),
@@ -201,13 +198,13 @@ export default function LandingSettingsPage() {
                 <ImageUploadField
                   name="heroBg"
                   initialUrl={config.hero.backgroundImage}
-                  label="Imagen de Fondo"
-                  placeholderText="Sube o selecciona imagen"
+                  label="Background Image"
+                  placeholderText="Upload or select an image"
                   previewWidth={240}
                 />
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Título
+                    Title
                   </label>
                   <input
                     type="text"
@@ -218,7 +215,7 @@ export default function LandingSettingsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Subtítulo
+                    Subtitle
                   </label>
                   <input
                     type="text"
@@ -228,11 +225,10 @@ export default function LandingSettingsPage() {
                   />
                 </div>
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Texto Botón Primario
+                    Primary Button Text
                   </label>
                   <input
                     type="text"
@@ -243,7 +239,7 @@ export default function LandingSettingsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Enlace Botón Primario
+                    Primary Button Link
                   </label>
                   <input
                     type="text"
@@ -254,7 +250,7 @@ export default function LandingSettingsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Texto Botón Secundario
+                    Secondary Button Text
                   </label>
                   <input
                     type="text"
@@ -265,7 +261,7 @@ export default function LandingSettingsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Enlace Botón Secundario
+                    Secondary Button Link
                   </label>
                   <input
                     type="text"
@@ -275,18 +271,17 @@ export default function LandingSettingsPage() {
                   />
                 </div>
               </div>
-
               <button
                 type="submit"
                 className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium"
               >
-                Guardar Hero
+                Save Hero Section
               </button>
             </form>
           )}
         </div>
 
-        {/* ─── Sección: Servicios (Features) ───────────────────────── */}
+        {/* ─── Section: Services ────────────────────────────────────── */}
         <div className="border-b pb-4">
           <button
             type="button"
@@ -294,7 +289,7 @@ export default function LandingSettingsPage() {
             className="flex items-center justify-between w-full"
           >
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
-              Servicios
+              Services
             </h2>
             <ChevronDown
               size={20}
@@ -303,15 +298,14 @@ export default function LandingSettingsPage() {
               }`}
             />
           </button>
-
           {open.features && (
             <form
               onSubmit={e => {
                 e.preventDefault();
                 const fd = new FormData(e.currentTarget);
                 const features = JSON.parse(
-                  fd.get('featuresJSON') as string || '[]'
-                ) as any[];
+                  (fd.get('featuresJSON') as string) || '[]'
+                );
                 saveSection('features', { features });
               }}
               className="mt-4"
@@ -324,13 +318,13 @@ export default function LandingSettingsPage() {
                 type="submit"
                 className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium"
               >
-                Guardar Servicios
+                Save Services
               </button>
             </form>
           )}
         </div>
 
-        {/* ─── Sección: Portafolio ───────────────────────────────────── */}
+        {/* ─── Section: Portfolio ───────────────────────────────────── */}
         <div className="border-b pb-4">
           <button
             type="button"
@@ -338,7 +332,7 @@ export default function LandingSettingsPage() {
             className="flex items-center justify-between w-full"
           >
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
-              Portafolio
+              Portfolio
             </h2>
             <ChevronDown
               size={20}
@@ -347,15 +341,14 @@ export default function LandingSettingsPage() {
               }`}
             />
           </button>
-
           {open.portfolio && (
             <form
               onSubmit={e => {
                 e.preventDefault();
                 const fd = new FormData(e.currentTarget);
                 const portfolio = JSON.parse(
-                  fd.get('portfolioJSON') as string || '[]'
-                ) as any[];
+                  (fd.get('portfolioJSON') as string) || '[]'
+                );
                 saveSection('portfolio', { portfolio });
               }}
               className="mt-4"
@@ -368,13 +361,13 @@ export default function LandingSettingsPage() {
                 type="submit"
                 className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium"
               >
-                Guardar Portafolio
+                Save Portfolio
               </button>
             </form>
           )}
         </div>
 
-        {/* ─── Sección: Estadísticas ─────────────────────────────────── */}
+        {/* ─── Section: Stats ───────────────────────────────────────── */}
         <div className="border-b pb-4">
           <button
             type="button"
@@ -382,7 +375,7 @@ export default function LandingSettingsPage() {
             className="flex items-center justify-between w-full"
           >
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
-              Estadísticas
+              Stats
             </h2>
             <ChevronDown
               size={20}
@@ -391,15 +384,14 @@ export default function LandingSettingsPage() {
               }`}
             />
           </button>
-
           {open.stats && (
             <form
               onSubmit={e => {
                 e.preventDefault();
                 const fd = new FormData(e.currentTarget);
                 const stats = JSON.parse(
-                  fd.get('statsJSON') as string || '[]'
-                ) as any[];
+                  (fd.get('statsJSON') as string) || '[]'
+                );
                 saveSection('stats', { stats });
               }}
               className="mt-4"
@@ -412,13 +404,13 @@ export default function LandingSettingsPage() {
                 type="submit"
                 className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium"
               >
-                Guardar Estadísticas
+                Save Stats
               </button>
             </form>
           )}
         </div>
 
-        {/* ─── Sección: Testimonios ──────────────────────────────────── */}
+        {/* ─── Section: Testimonials ────────────────────────────────── */}
         <div className="border-b pb-4">
           <button
             type="button"
@@ -426,7 +418,7 @@ export default function LandingSettingsPage() {
             className="flex items-center justify-between w-full"
           >
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
-              Testimonios
+              Testimonials
             </h2>
             <ChevronDown
               size={20}
@@ -435,15 +427,14 @@ export default function LandingSettingsPage() {
               }`}
             />
           </button>
-
           {open.testimonials && (
             <form
               onSubmit={e => {
                 e.preventDefault();
                 const fd = new FormData(e.currentTarget);
                 const testimonials = JSON.parse(
-                  fd.get('testimonialsJSON') as string || '[]'
-                ) as any[];
+                  (fd.get('testimonialsJSON') as string) || '[]'
+                );
                 saveSection('testimonials', { testimonials });
               }}
               className="mt-4"
@@ -456,13 +447,13 @@ export default function LandingSettingsPage() {
                 type="submit"
                 className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium"
               >
-                Guardar Testimonios
+                Save Testimonials
               </button>
             </form>
           )}
         </div>
 
-        {/* ─── Sección: Logos Clientes ───────────────────────────────── */}
+        {/* ─── Section: Client Logos ────────────────────────────────── */}
         <div className="border-b pb-4">
           <button
             type="button"
@@ -470,7 +461,7 @@ export default function LandingSettingsPage() {
             className="flex items-center justify-between w-full"
           >
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
-              Logos Clientes
+              Client Logos
             </h2>
             <ChevronDown
               size={20}
@@ -479,15 +470,14 @@ export default function LandingSettingsPage() {
               }`}
             />
           </button>
-
           {open.logos && (
             <form
               onSubmit={e => {
                 e.preventDefault();
                 const fd = new FormData(e.currentTarget);
                 const clientLogos = JSON.parse(
-                  fd.get('clientLogosJSON') as string || '[]'
-                ) as any[];
+                  (fd.get('clientLogosJSON') as string) || '[]'
+                );
                 saveSection('logos', { clientLogos });
               }}
               className="mt-4"
@@ -500,13 +490,13 @@ export default function LandingSettingsPage() {
                 type="submit"
                 className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium"
               >
-                Guardar Logos
+                Save Logos
               </button>
             </form>
           )}
         </div>
 
-        {/* ─── Sección: Acerca de Nosotros ───────────────────────────── */}
+        {/* ─── Section: About Us ────────────────────────────────────── */}
         <div className="border-b pb-4">
           <button
             type="button"
@@ -514,7 +504,7 @@ export default function LandingSettingsPage() {
             className="flex items-center justify-between w-full"
           >
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
-              Acerca de Nosotros
+              About Us
             </h2>
             <ChevronDown
               size={20}
@@ -523,7 +513,6 @@ export default function LandingSettingsPage() {
               }`}
             />
           </button>
-
           {open.about && (
             <form
               onSubmit={e => {
@@ -531,15 +520,15 @@ export default function LandingSettingsPage() {
                 const fd = new FormData(e.currentTarget);
                 saveSection('about', {
                   aboutText: fd.get('aboutText'),
-                  mission:   fd.get('mission'),
-                  vision:    fd.get('vision'),
+                  mission: fd.get('mission'),
+                  vision: fd.get('vision'),
                 });
               }}
               className="mt-4 space-y-4"
             >
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Texto
+                  Text
                 </label>
                 <textarea
                   name="aboutText"
@@ -548,11 +537,10 @@ export default function LandingSettingsPage() {
                   className="w-full px-4 py-2 rounded border bg-white dark:bg-gray-700 text-sm text-gray-800 dark:text-white"
                 />
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Misión
+                    Mission
                   </label>
                   <textarea
                     name="mission"
@@ -563,7 +551,7 @@ export default function LandingSettingsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Visión
+                    Vision
                   </label>
                   <textarea
                     name="vision"
@@ -573,18 +561,17 @@ export default function LandingSettingsPage() {
                   />
                 </div>
               </div>
-
               <button
                 type="submit"
                 className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium"
               >
-                Guardar Acerca
+                Save About
               </button>
             </form>
           )}
         </div>
 
-        {/* ─── Sección: Redes Sociales ───────────────────────────────── */}
+        {/* ─── Section: Social Links ────────────────────────────────── */}
         <div className="border-b pb-4">
           <button
             type="button"
@@ -592,7 +579,7 @@ export default function LandingSettingsPage() {
             className="flex items-center justify-between w-full"
           >
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
-              Redes Sociales
+              Social Links
             </h2>
             <ChevronDown
               size={20}
@@ -601,7 +588,6 @@ export default function LandingSettingsPage() {
               }`}
             />
           </button>
-
           {open.social && (
             <form
               onSubmit={e => {
@@ -609,44 +595,45 @@ export default function LandingSettingsPage() {
                 const fd = new FormData(e.currentTarget);
                 saveSection('social', {
                   socialLinks: {
-                    github:    fd.get('githubLink'),
-                    linkedin:  fd.get('linkedinLink'),
-                    twitter:   fd.get('twitterLink'),
-                    facebook:  fd.get('facebookLink'),
+                    github: fd.get('githubLink'),
+                    linkedin: fd.get('linkedinLink'),
+                    twitter: fd.get('twitterLink'),
+                    facebook: fd.get('facebookLink'),
                     instagram: fd.get('instagramLink'),
                   },
                 });
               }}
               className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4"
             >
-              {['github','linkedin','twitter','facebook','instagram'].map(net => (
-                <div key={net}>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {net.charAt(0).toUpperCase() + net.slice(1)}
-                  </label>
-                  <input
-                    type="text"
-                    name={`${net}Link`}
-                    defaultValue={config.socialLinks?.[net]}
-                    placeholder={`https://`}
-                    className="w-full px-4 py-2 rounded border bg-white dark:bg-gray-700 text-sm text-gray-800 dark:text-gray-400" 
-                  />
-                </div>
-              ))}
-
+              {['github','linkedin','twitter','facebook','instagram'].map(
+                net => (
+                  <div key={net}>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {net.charAt(0).toUpperCase() + net.slice(1)}
+                    </label>
+                    <input
+                      type="text"
+                      name={`${net}Link`}
+                      defaultValue={config.socialLinks?.[net]}
+                      placeholder="https://"
+                      className="w-full px-4 py-2 rounded border bg-white dark:bg-gray-700 text-sm text-gray-800 dark:text-gray-400"
+                    />
+                  </div>
+                )
+              )}
               <div className="col-span-full">
                 <button
                   type="submit"
                   className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium"
                 >
-                  Guardar Redes
+                  Save Social Links
                 </button>
               </div>
             </form>
           )}
         </div>
 
-        {/* ─── Sección: Contacto ─────────────────────────────────────── */}
+        {/* ─── Section: Contact ─────────────────────────────────────── */}
         <div className="border-b pb-4">
           <button
             type="button"
@@ -654,7 +641,7 @@ export default function LandingSettingsPage() {
             className="flex items-center justify-between w-full"
           >
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
-              Contacto
+              Contact
             </h2>
             <ChevronDown
               size={20}
@@ -663,7 +650,6 @@ export default function LandingSettingsPage() {
               }`}
             />
           </button>
-
           {open.contact && (
             <form
               onSubmit={e => {
@@ -672,8 +658,8 @@ export default function LandingSettingsPage() {
                 saveSection('contact', {
                   contactInfo: {
                     address: fd.get('address'),
-                    phone:   fd.get('phone'),
-                    email:   fd.get('email'),
+                    phone: fd.get('phone'),
+                    email: fd.get('email'),
                   },
                 });
               }}
@@ -681,19 +667,19 @@ export default function LandingSettingsPage() {
             >
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Dirección
+                  Address
                 </label>
                 <input
                   type="text"
                   name="address"
                   defaultValue={config.contactInfo?.address}
-                  placeholder="Calle Falsa 123"
+                  placeholder="123 Main St"
                   className="w-full px-4 py-2 rounded border bg-white dark:bg-gray-700 text-sm text-gray-800 dark:text-gray-400"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Teléfono
+                  Phone
                 </label>
                 <input
                   type="text"
@@ -711,7 +697,7 @@ export default function LandingSettingsPage() {
                   type="email"
                   name="email"
                   defaultValue={config.contactInfo?.email}
-                  placeholder="info@tu-dominio.com"
+                  placeholder="info@your-domain.com"
                   className="w-full px-4 py-2 rounded border bg-white dark:bg-gray-700 text-sm text-gray-800 dark:text-gray-400"
                 />
               </div>
@@ -720,14 +706,14 @@ export default function LandingSettingsPage() {
                   type="submit"
                   className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium"
                 >
-                  Guardar Contacto
+                  Save Contact
                 </button>
               </div>
             </form>
           )}
         </div>
 
-        {/* ─── Sección: Footer ───────────────────────────────────────── */}
+        {/* ─── Section: Footer ───────────────────────────────────────── */}
         <div className="pb-4">
           <button
             type="button"
@@ -744,7 +730,6 @@ export default function LandingSettingsPage() {
               }`}
             />
           </button>
-
           {open.footer && (
             <form
               onSubmit={e => {
@@ -753,8 +738,8 @@ export default function LandingSettingsPage() {
                 saveSection('footer', {
                   footer: {
                     copyrightText: fd.get('footerCopyright'),
-                    privacyLink:   fd.get('footerPrivacy'),
-                    termsLink:     fd.get('footerTerms'),
+                    privacyLink: fd.get('footerPrivacy'),
+                    termsLink: fd.get('footerTerms'),
                   },
                 });
               }}
@@ -769,13 +754,13 @@ export default function LandingSettingsPage() {
                     type="text"
                     name="footerCopyright"
                     defaultValue={config.footer?.copyrightText}
-                    placeholder="© 2025 Tu Empresa"
+                    placeholder="© 2025 Your Company"
                     className="w-full px-4 py-2 rounded border bg-white dark:bg-gray-700 text-sm text-gray-800 dark:text-gray-400"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Política de Privacidad
+                    Privacy Policy
                   </label>
                   <input
                     type="text"
@@ -787,7 +772,7 @@ export default function LandingSettingsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Términos y Condiciones
+                    Terms and Conditions
                   </label>
                   <input
                     type="text"
@@ -802,7 +787,7 @@ export default function LandingSettingsPage() {
                 type="submit"
                 className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium"
               >
-                Guardar Footer
+                Save Footer
               </button>
             </form>
           )}

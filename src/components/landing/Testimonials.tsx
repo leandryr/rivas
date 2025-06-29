@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 
 interface Testimonial {
@@ -12,10 +12,29 @@ interface Testimonial {
 }
 
 export default function Testimonials({ testimonials }: { testimonials: Testimonial[] }) {
+  // SSR y cliente arrancan con 0
   const [index, setIndex] = useState(0)
 
-  const prev = () => setIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1))
-  const next = () => setIndex((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1))
+  const prev = () =>
+    setIndex((i) => (i === 0 ? testimonials.length - 1 : i - 1))
+  const next = () =>
+    setIndex((i) => (i === testimonials.length - 1 ? 0 : i + 1))
+
+  useEffect(() => {
+    if (!testimonials?.length) return
+
+    // Al montar en cliente, arranca en random
+    const initial = Math.floor(Math.random() * testimonials.length)
+    setIndex(initial)
+
+    // Luego la rotación cada 7s
+    const interval = setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * testimonials.length)
+      setIndex(randomIndex)
+    }, 7000)
+
+    return () => clearInterval(interval)
+  }, [testimonials])
 
   if (!testimonials?.length) return null
 
@@ -27,21 +46,45 @@ export default function Testimonials({ testimonials }: { testimonials: Testimoni
         <h2 className="text-3xl font-bold mb-12">Testimonios</h2>
 
         <div className="bg-gray-100 p-6 rounded-lg shadow-md animate-fadeInUp">
-          <p className="text-gray-700 italic text-base md:text-lg mb-4">"{t.quote}"</p>
+          <p className="text-gray-700 italic text-base md:text-lg mb-4">
+            "{t.quote}"
+          </p>
           <div className="flex items-center justify-center mt-4 gap-3">
-            <Image src={t.avatarUrl} alt={t.name} width={40} height={40} className="rounded-full" />
+            <Image
+              src={t.avatarUrl}
+              alt={t.name}
+              width={40}
+              height={40}
+              className="rounded-full"
+            />
             <div className="text-left">
               <p className="font-semibold">{t.name}</p>
               <p className="text-sm text-gray-600">{t.role}</p>
             </div>
-            <Image src={t.flagUrl} alt="flag" width={20} height={12} className="ml-2" />
+            <Image
+              src={t.flagUrl}
+              alt="flag"
+              width={20}
+              height={12}
+              className="ml-2"
+            />
           </div>
         </div>
 
         {/* Flechas */}
         <div className="flex justify-center gap-6 mt-8">
-          <button onClick={prev} className="text-gray-500 hover:text-gray-700 transition text-xl">←</button>
-          <button onClick={next} className="text-gray-500 hover:text-gray-700 transition text-xl">→</button>
+          <button
+            onClick={prev}
+            className="text-gray-500 hover:text-gray-700 transition text-xl"
+          >
+            ←
+          </button>
+          <button
+            onClick={next}
+            className="text-gray-500 hover:text-gray-700 transition text-xl"
+          >
+            →
+          </button>
         </div>
       </div>
     </section>

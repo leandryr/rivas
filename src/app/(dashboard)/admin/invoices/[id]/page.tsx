@@ -65,7 +65,7 @@ export default function AdminInvoiceDetailPage() {
             />
           </div>
           <div className="text-right text-sm space-y-1">
-            <div className="font-bold text-lg">RIVAS TECNOLOGIES LLC</div>
+            <div className="font-bold text-lg">RIVAS TECHNOLOGIES LLC</div>
             <div>3005 Waterside Oaks Dr SW, Gainesville, GA 30504</div>
             <div>info@rivasdev.com</div>
             <div>+1 (404) 839-4292</div>

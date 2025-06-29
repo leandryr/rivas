@@ -1,4 +1,3 @@
-// src/components/TopbarMobile.tsx
 'use client'
 
 import { useTheme } from 'next-themes'
@@ -7,7 +6,6 @@ import {
   MoonIcon,
   UserIcon,
   MailIcon,
-  CreditCardIcon,
   LogOutIcon,
 } from 'lucide-react'
 import { useEffect, useState, useRef } from 'react'
@@ -22,9 +20,7 @@ export default function TopbarMobile() {
   const router = useRouter()
 
   const [isEmailVerified, setIsEmailVerified] = useState(false)
-  const [hasValidPayment, setHasValidPayment] = useState(false)
   const [fullName, setFullName] = useState('Client')
-
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -40,7 +36,6 @@ export default function TopbarMobile() {
           name?: string
           lastname?: string
           isEmailVerified?: boolean
-          hasValidPaymentMethod?: boolean
         }
 
         const name =
@@ -50,11 +45,9 @@ export default function TopbarMobile() {
 
         setFullName(name)
         setIsEmailVerified(!!user?.isEmailVerified)
-        setHasValidPayment(!!user?.hasValidPaymentMethod)
       } catch {
         setFullName('Client')
         setIsEmailVerified(false)
-        setHasValidPayment(false)
       }
     }
 
@@ -86,18 +79,12 @@ export default function TopbarMobile() {
               {isEmailVerified ? 'Verified' : 'Pendiente'}
             </span>
           </span>
-          <span className="flex items-center gap-1">
-            <CreditCardIcon className="w-4 h-4" />
-            <span className={hasValidPayment ? 'text-green-600' : 'text-red-500'}>
-              {hasValidPayment ? 'Verified' : 'Pendiente'}
-            </span>
-          </span>
         </span>
       </div>
 
       {/* Botones */}
       <div className="flex items-center gap-3 relative">
-        {/* Aquí va nuestro dropdown de notificaciones */}
+        {/* Dropdown de notificaciones */}
         <NotificationsDropdown />
 
         {/* Toggle tema */}
@@ -107,10 +94,11 @@ export default function TopbarMobile() {
             className="text-gray-600 dark:text-gray-300 hover:text-blue-500"
             aria-label="Toggle dark mode"
           >
-            {theme === 'dark'
-              ? <SunIcon className="w-5 h-5 text-yellow-400" />
-              : <MoonIcon className="w-5 h-5" />
-            }
+            {theme === 'dark' ? (
+              <SunIcon className="w-5 h-5 text-yellow-400" />
+            ) : (
+              <MoonIcon className="w-5 h-5" />
+            )}
           </button>
         )}
 
@@ -143,24 +131,6 @@ export default function TopbarMobile() {
                 className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-100"
               >
                 Verifications
-              </button>
-              <button
-                onClick={() => {
-                  router.push('/client/payments')
-                  setDropdownOpen(false)
-                }}
-                className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-100"
-              >
-                Payments
-              </button>
-              <button
-                onClick={() => {
-                  router.push('/client/subscription')
-                  setDropdownOpen(false)
-                }}
-                className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-100"
-              >
-                Subscription
               </button>
               <hr className="border-gray-200 dark:border-gray-600" />
               <button

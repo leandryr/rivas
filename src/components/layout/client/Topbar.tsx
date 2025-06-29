@@ -86,12 +86,6 @@ export default function TopbarDesktop() {
               >
                 Payments
               </a>
-              <a
-                href="/client/subscription"
-                className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
-              >
-                Subscription
-              </a>
               <button
                 onClick={() => signOut()}
                 className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"

@@ -1,27 +1,37 @@
-'use client';
+// src/components/ClientDashboard.tsx
+'use client'
 
-import { useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react'
 
 export default function ClientDashboard() {
-  const { data: session } = useSession();
-  const name = session?.user?.name || 'Cliente';
+  const { data: session } = useSession()
+  const name = session?.user?.name || 'Cliente'
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-4">Bienvenido, {name}</h1>
-      <p className="text-gray-600 mb-6">
-        Este es tu panel de cliente. Aquí puedes ver el estado de tus proyectos, contactar soporte y más.
+    <div className="max-w-3xl mx-auto py-16 px-4 text-center space-y-6">
+      <h1 className="text-3xl font-bold text-gray-900">
+        Bienvenido, {name}
+      </h1>
+      <p className="text-gray-600">
+        Tu panel de control está en construcción. Próximamente agregaremos estadísticas reales y reportes interactivos. ¡Estamos trabajando en ello!
       </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="border p-4 rounded-md shadow-sm">
-          <h2 className="text-lg font-semibold">Estado de Proyectos</h2>
-          <p className="text-sm text-gray-500">Consulta el avance de los proyectos en los que estás involucrado.</p>
-        </div>
-        <div className="border p-4 rounded-md shadow-sm">
-          <h2 className="text-lg font-semibold">Soporte y Ayuda</h2>
-          <p className="text-sm text-gray-500">Accede a soporte técnico o abre un ticket de consulta.</p>
-        </div>
+      <div className="bg-white p-8 rounded-xl shadow-md">
+        <svg
+          className="mx-auto mb-4 h-12 w-12 text-blue-600 animate-pulse"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none" viewBox="0 0 24 24" stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+            d="M3 3v18h18M3 12h18M12 3v18"
+          />
+        </svg>
+        <h2 className="text-xl font-semibold text-gray-800">
+          Estadísticas próximamente
+        </h2>
+        <p className="text-gray-500">
+          En breve podrás ver informes detallados de facturas, cotizaciones, proyectos y reuniones.
+        </p>
       </div>
     </div>
-  );
+  )
 }

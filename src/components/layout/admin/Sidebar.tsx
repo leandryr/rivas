@@ -27,7 +27,7 @@ const navGroups = [
       { label: 'Dashboard', href: '/admin', icon: <Home size={18} /> },
       { label: 'Landing', href: '/admin/landing-settings', icon: <Globe size={18} /> },
       { label: 'Services', href: '/admin/services', icon: <Layers size={18} /> },
-      { label: 'Posts', href: '/admin/posts', icon: <FileText size={18} /> },       // ← agregado
+      { label: 'Posts', href: '/admin/posts', icon: <FileText size={18} /> },   
     ],
   },
   {
@@ -50,7 +50,8 @@ const navGroups = [
   {
     title: 'Finance',
     items: [
-      { label: 'Subscriptions', href: '/admin/subscriptions', icon: <Wallet size={18} /> },
+      { label: 'Summary', href: '/admin/finance', icon: <Receipt size={18} /> },
+      { label: 'Payments', href: '/admin/payments', icon: <Receipt size={18} /> },
       { label: 'Pricing', href: '/admin/pricing', icon: <Wallet size={18} /> },
       { label: 'Quotes', href: '/admin/quotes', icon: <Receipt size={18} /> },
       { label: 'Invoices', href: '/admin/invoices', icon: <Receipt size={18} /> },

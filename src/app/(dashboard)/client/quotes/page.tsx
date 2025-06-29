@@ -42,12 +42,12 @@ export default function ClientQuotesPage() {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-4">
       <h1 className="text-2xl font-bold">Your Quotes</h1>
+
       {quotes.length === 0 ? (
         <p>You have no quotes at the moment.</p>
       ) : (
         <div className="space-y-4">
           {quotes.map(q => {
-            // Map status to Badge variants: default, info, success, danger
             const badgeVariant: 'default' | 'info' | 'success' | 'danger' =
               q.status === 'pending'   ? 'default' :
               q.status === 'accepted'  ? 'info'    :
@@ -69,15 +69,11 @@ export default function ClientQuotesPage() {
                     {new Date(q.validUntil).toLocaleDateString()}
                   </p>
                   <p className="mt-1">
-                    <Badge variant={badgeVariant}>
-                      {q.status}
-                    </Badge>
+                    <Badge variant={badgeVariant}>{q.status}</Badge>
                   </p>
                 </div>
                 <div className="mt-3 md:mt-0 text-right">
-                  <p className="font-medium">
-                    Total: ${q.total.toFixed(2)}
-                  </p>
+                  <p className="font-medium">Total: ${q.total.toFixed(2)}</p>
                   <Button
                     size="sm"
                     variant="outline"

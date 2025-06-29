@@ -1,8 +1,7 @@
-// src/app/client/quotes/[id]/page.tsx
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 
@@ -29,6 +28,7 @@ interface QuoteDetail {
 
 export default function ClientQuoteDetailPage() {
   const { id } = useParams()
+  const router = useRouter()
   const [quote, setQuote] = useState<QuoteDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [actioning, setActioning] = useState(false)
@@ -40,18 +40,17 @@ export default function ClientQuoteDetailPage() {
       .finally(() => setLoading(false))
   }, [id])
 
-  const handleAction = async (action: 'accept' | 'reject' | 'pay') => {
+  const handleAction = async (action: 'accept' | 'reject') => {
     if (!quote) return
     setActioning(true)
     const res = await fetch(`/api/client/quotes/${id}/${action}`, { method: 'POST' })
     if (res.ok) {
       const updated = await res.json()
-      if (action === 'pay') {
-        const { url } = updated as any
-        window.location.href = url
+      setQuote(updated as QuoteDetail)
+      if (action === 'accept') {
+        router.push('/client/payments')
         return
       }
-      setQuote(updated as QuoteDetail)
     } else {
       alert('Error performing action')
     }
@@ -61,7 +60,6 @@ export default function ClientQuoteDetailPage() {
   if (loading) return <p className="p-4">Loading…</p>
   if (!quote) return <p className="p-4">Quote not found.</p>
 
-  // Variantes válidas para Badge: default, success, warning, danger, info
   const badgeVariant: 'default' | 'success' | 'warning' | 'danger' | 'info' =
     quote.status === 'pending'  ? 'default' :
     quote.status === 'accepted' ? 'info'    :
@@ -71,7 +69,12 @@ export default function ClientQuoteDetailPage() {
 
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-4">
-      <h1 className="text-2xl font-bold">Quote Details</h1>
+      <div className="flex items-center space-x-4">
+        <Button variant="outline" size="sm" onClick={() => router.back()}>
+          ← Atrás
+        </Button>
+        <h1 className="text-2xl font-bold">Quote Details</h1>
+      </div>
 
       <div className="space-y-2 border rounded p-4">
         {quote.items.map((it, i) => (
@@ -137,14 +140,13 @@ export default function ClientQuoteDetailPage() {
             </Button>
           </>
         )}
-        {quote.status === 'accepted' && (
-          <Button
-            disabled={actioning}
-            onClick={() => handleAction('pay')}
-          >
-            {actioning ? 'Redirecting…' : 'Pay'}
-          </Button>
+
+        {quote.status === 'paid' && (
+          <p className="text-green-600 font-medium">
+            Esta cotización está pagada.
+          </p>
         )}
+
         {quote.pdfUrl && (
           <Button asChild>
             <a

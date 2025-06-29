@@ -1,3 +1,4 @@
+// src/app/api/users/save-payment-method/route.ts
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth/auth'
@@ -6,12 +7,12 @@ import User from '@/models/User'
 import Stripe from 'stripe'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-05-28.basil',
+  apiVersion: '2025-05-28.basil', // Versión estable compatible actual (evita usar futuras como '2025-05-28.basil')
 })
 
 export async function POST(req: Request) {
   try {
-    const { paymentMethodId } = (await req.json()) as { paymentMethodId: string }
+    const { paymentMethodId } = await req.json()
 
     if (!paymentMethodId) {
       return NextResponse.json({ error: 'Missing paymentMethodId' }, { status: 400 })
@@ -23,6 +24,7 @@ export async function POST(req: Request) {
     }
 
     await connectDB()
+
     const user = await User.findOne({ email: session.user.email })
 
     if (!user || !user.stripeCustomerId) {
@@ -34,7 +36,7 @@ export async function POST(req: Request) {
       customer: user.stripeCustomerId,
     })
 
-    // ⭐ Establecerlo como método predeterminado para futuras facturas
+    // ⭐ Establecer como método de pago predeterminado
     await stripe.customers.update(user.stripeCustomerId, {
       invoice_settings: {
         default_payment_method: paymentMethodId,
@@ -56,8 +58,11 @@ export async function POST(req: Request) {
     await user.save()
 
     return NextResponse.json({ success: true })
-  } catch (err) {
-    console.error('Save payment method error:', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } catch (err: any) {
+    console.error('Save payment method error:', err.message || err)
+    return NextResponse.json(
+      { error: err?.message || 'Internal server error' },
+      { status: 500 }
+    )
   }
 }

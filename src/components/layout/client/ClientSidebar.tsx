@@ -8,7 +8,6 @@ import {
   FolderIcon,
   CalendarIcon,
   FileTextIcon,
-  CreditCardIcon,
   UserIcon,
   BellIcon,
   LogOutIcon,
@@ -22,7 +21,6 @@ import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import 'flowbite';
 
-// Choose an icon per section:
 const links = [
   { href: '/client', label: 'Dashboard', icon: HomeIcon },
   { href: '/client/support', label: 'Support Tickets', icon: TicketIcon },
@@ -30,8 +28,7 @@ const links = [
   { href: '/client/meetings', label: 'Meetings', icon: CalendarIcon },
   { href: '/client/files', label: 'Documents', icon: FileTextIcon },
   { href: '/client/quotes', label: 'Quotes', icon: FileTextIcon },
-  { href: '/client/invoices', label: 'Invoices', icon: CreditCardIcon },
-  { href: '/client/subscription', label: 'Subscription', icon: BellIcon },
+  { href: '/client/invoices', label: 'Invoices', icon: FileTextIcon },
   { href: '/client/profile', label: 'Profile', icon: UserIcon },
 ];
 
@@ -42,7 +39,6 @@ export default function ClientSidebar() {
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
-  const [hasValidPaymentMethod, setHasValidPaymentMethod] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
   const name = session?.user?.name || '';
@@ -58,11 +54,9 @@ export default function ClientSidebar() {
         const avatarFromDB = user.avatar || '';
         setAvatarUrl(avatarFromDB.startsWith('http') ? avatarFromDB : fallbackImage);
         setIsEmailVerified(!!user.isEmailVerified);
-        setHasValidPaymentMethod(!!user.hasValidPaymentMethod);
       } catch {
         setAvatarUrl(fallbackImage);
         setIsEmailVerified(false);
-        setHasValidPaymentMethod(false);
       }
     })();
   }, [session]);
@@ -110,23 +104,11 @@ export default function ClientSidebar() {
           <div className="text-center mt-2">
             <h2 className="text-lg font-semibold text-gray-800 dark:text-white">{name}</h2>
             <p className="text-sm text-gray-500 dark:text-gray-400">{email}</p>
-            <div className="flex justify-center items-center gap-4 mt-2">
-              <div className="flex items-center gap-1 text-sm">
-                <MailIcon className="w-4 h-4" />
-                <span className={isEmailVerified ? 'text-green-600' : 'text-red-500'}>
-                  {isEmailVerified ? 'Verified' : 'Not Verified'}
-                </span>
-              </div>
-              <div className="flex items-center gap-1 text-sm">
-                <CreditCardIcon className="w-4 h-4" />
-                {hasValidPaymentMethod ? (
-                  <span className="text-green-600">Paid</span>
-                ) : (
-                  <button onClick={goToVerification} className="text-yellow-600 hover:underline">
-                    Pending
-                  </button>
-                )}
-              </div>
+            <div className="flex justify-center items-center gap-2 mt-2 text-sm">
+              <MailIcon className="w-4 h-4" />
+              <span className={isEmailVerified ? 'text-green-600' : 'text-red-500'}>
+                {isEmailVerified ? 'Verified' : 'Not Verified'}
+              </span>
             </div>
           </div>
           <button

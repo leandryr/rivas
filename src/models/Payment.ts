@@ -1,20 +1,52 @@
-import { Schema, model, models, Types } from "mongoose";
+// src/models/Payment.ts
+import mongoose, { Schema, Document, Types } from 'mongoose'
+import { Counter } from './Counter'
+import { IQuote, Quote } from './Quote'
 
-const PaymentSchema = new Schema({
-  invoice:      { type: Types.ObjectId, ref: "Invoice" },
-  subscription: { type: Types.ObjectId, ref: "Subscription" },
-  amount:       { type: Number, required: true },
-  currency:     { type: String, default: "USD" },
-  method:       { type: String, enum: ["stripe","paypal","manual"], required: true },
-  transactionId:{ type: String },
-  status:       { type: String, enum: ["succeeded","failed","pending"], default: "pending" },
-  paidAt:       { type: Date }
-}, {
-  timestamps: true
-});
+export interface IPayment extends Document {
+  quote: Types.ObjectId | IQuote
+  method: 'cash' | 'cheque' | 'paypal' | 'stripe' | 'other'
+  reference?: string
+  createdAt: Date
+  updatedAt: Date
+}
 
-PaymentSchema.index({ invoice: 1 });
-PaymentSchema.index({ subscription: 1 });
+const PaymentSchema = new Schema<IPayment>(
+  {
+    quote: { type: Schema.Types.ObjectId, ref: 'Quote', required: true },
+    method: {
+      type: String,
+      enum: ['cash', 'cheque', 'paypal', 'stripe', 'other'],
+      required: true,
+    },
+    reference: { type: String, default: null },
+  },
+  { timestamps: true }
+)
 
-const Payment = models.Payment || model("Payment", PaymentSchema);
-export default Payment;
+// Opcional: correlativo de pagos
+PaymentSchema.pre<IPayment>('save', async function (next) {
+  if (this.isNew) {
+    await Counter.findByIdAndUpdate(
+      'paymentNumber',
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    )
+  }
+  next()
+})
+
+// **Post-save**: actualiza la cotización a `paid` y dispara sus hooks
+PaymentSchema.post<IPayment>('save', async function (doc) {
+  const quote = await Quote.findById(doc.quote)
+  if (quote && quote.status !== 'paid') {
+    quote.status = 'paid'
+    await quote.save()    // dispara tus pre('save') de QuoteSchema
+  }
+})
+
+PaymentSchema.index({ quote: 1, createdAt: -1 })
+
+export const Payment =
+  mongoose.models.Payment ||
+  mongoose.model<IPayment>('Payment', PaymentSchema)
