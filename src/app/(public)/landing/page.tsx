@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { cache } from 'react';
 import Image from 'next/image';
 import CookieBanner from './CookieBanner';
