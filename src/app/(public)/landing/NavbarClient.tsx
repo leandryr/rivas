@@ -57,7 +57,7 @@ export default function NavbarClient({
           aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
         >
           <Image
-            src="/hamburguesa.png"
+            src="/hamburger.png"
             alt="Menú"
             width={32}
             height={32}
@@ -107,6 +107,7 @@ export default function NavbarClient({
           <a href="#portfolio" onClick={() => setMenuOpen(false)}>Portafolio</a>
           <a href="#about" onClick={() => setMenuOpen(false)}>Acerca</a>
           <a href="#contact" onClick={() => setMenuOpen(false)}>Contacto</a>
+          <a href="/blog" onClick={() => setMenuOpen(false)}>Blog</a>
           <a
             href="/login"
             onClick={() => setMenuOpen(false)}

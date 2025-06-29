@@ -292,7 +292,7 @@ export default async function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-white text-gray-800 py-10 px-6 text-sm border-t">
+      <footer className="bg-white text-gray-800 py-20 px-6 text-sm border-t">
         <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-0 gap-10 md:px-20">
 
           {/* Columna izquierda */}
