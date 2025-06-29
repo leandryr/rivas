@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server'
 import connectDB from '@/lib/db'
 import { Post } from '@/models/Post'
-import { Subscriber } from '@/models/Subscriber'
+import Subscriber, { ISubscriber } from '@/models/Subscriber'
 import { sendNewPostEmail } from '@/lib/mailer'
 import { Types } from 'mongoose'
 import { getServerSession } from 'next-auth/next'
@@ -76,13 +76,13 @@ export async function PUT(
   }
 
   if (status === 'published') {
-    const subs = await Subscriber.find().lean()
-    subs.forEach((s) =>
+    const subs = await Subscriber.find().lean() as ISubscriber[]
+    subs.forEach((s: ISubscriber) => {
       sendNewPostEmail(s.email, {
         title: updated.title,
         slug: updated.slug,
       }).catch(console.error)
-    )
+    })
   }
 
   return NextResponse.json(updated)

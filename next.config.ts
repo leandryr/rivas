@@ -1,19 +1,24 @@
-// next.config.js
+/** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   images: {
     domains: ['lh3.googleusercontent.com', 'res.cloudinary.com'],
   },
   env: {
-    STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
   },
   typescript: {
-    // Ignora errores de compilación de TypeScript
-    ignoreBuildErrors: true,
+    // Mejor corregir errores que ignorarlos por completo
+    ignoreBuildErrors: false,
   },
   eslint: {
-    // Ignora errores de ESLint durante el build
-    ignoreDuringBuilds: true,
+    // Mejor corregir lints que ignorarlos por completo
+    ignoreDuringBuilds: false,
   },
-};
+  // Opcional: asegura Node 18 en Vercel
+  engines: {
+    node: '18.x',
+  },
+}
 
-export default nextConfig;
+export default nextConfig
