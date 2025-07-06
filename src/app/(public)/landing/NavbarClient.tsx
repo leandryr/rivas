@@ -70,7 +70,7 @@ export default function NavbarClient({
           <a href="/landing#services" className="hover:text-gray-900">Servicios</a>
           <a href="/landing#portfolio" className="hover:text-gray-900">Portafolio</a>
           <a href="/landing#about" className="hover:text-gray-900">Acerca</a>
-          <a href="/lansing#contact" className="hover:text-gray-900">Contacto</a>
+          <a href="/landing#contact" className="hover:text-gray-900">Contacto</a>
           <a href="/blog" className="hover:text-gray-900">Blog</a>
           <a
             href="/login"

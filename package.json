@@ -57,6 +57,7 @@
     "tailwind-merge": "^3.3.0",
     "tailwind-scrollbar-hide": "^4.0.0",
     "tailwind-variants": "^1.0.0",
+    "uuid": "^11.1.0",
     "zod": "^3.25.67"
   },
   "devDependencies": {

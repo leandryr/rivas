@@ -1,12 +1,17 @@
+// lib/sendSupportEmail.ts
 import nodemailer from 'nodemailer'
 
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: parseInt(process.env.EMAIL_PORT || '587'),
-  secure: false,
+  host: process.env.TICKET_EMAIL_HOST,
+  port: Number(process.env.TICKET_EMAIL_PORT) || 465,
+  secure: true,                    // TLS en 465
   auth: {
     user: process.env.TICKET_EMAIL_USER,
     pass: process.env.TICKET_EMAIL_PASS,
+  },
+  tls: {
+    // en desarrollo puede ayudar a no romperse con certificados self-signed
+    rejectUnauthorized: false,
   },
 })
 
@@ -24,7 +29,7 @@ export async function sendSupportEmail({ to, subject, html }: EmailOptions) {
       subject,
       html,
     })
-  } catch (error) {
-    console.error('[sendSupportEmail] Error al enviar email:', error)
+  } catch (err) {
+    console.error('[sendSupportEmail] Error al enviar email:', err)
   }
 }

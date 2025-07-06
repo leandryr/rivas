@@ -6,20 +6,14 @@ import nodemailer from 'nodemailer'
 
 /**
  * POST /api/auth/register
- * Endpoint para registrar un nuevo usuario cliente.
- * Valida datos, verifica duplicados, crea usuario con contraseña hasheada,
- * y envía un email de bienvenida.
+ * Registra un usuario y envía un email de bienvenida.
  */
 export async function POST(req: Request) {
   try {
-    // Parseamos el cuerpo JSON
+    // 1. Parsear y validar cuerpo
     const { name, lastname, company, email, password } = await req.json()
-
-    // Validaciones básicas y saneamiento
     if (
-      !name ||
-      !email ||
-      !password ||
+      !name || !email || !password ||
       typeof name !== 'string' ||
       typeof email !== 'string' ||
       typeof password !== 'string' ||
@@ -31,24 +25,25 @@ export async function POST(req: Request) {
       )
     }
 
-    const cleanEmail = email.trim().toLowerCase()
-    const cleanName = name.trim()
+    const cleanName     = name.trim()
     const cleanLastname = typeof lastname === 'string' ? lastname.trim() : ''
-    const cleanCompany = typeof company === 'string' ? company.trim() : ''
+    const cleanCompany  = typeof company  === 'string' ? company.trim()  : ''
+    const cleanEmail    = email.trim().toLowerCase()
 
-    // Conectamos a la base de datos
+    // 2. Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(cleanEmail)) {
+      return NextResponse.json({ error: 'Invalid email format' }, { status: 400 })
+    }
+
+    // 3. Conectar DB y verificar duplicado
     await connectDB()
-
-    // Verificamos si el email ya está registrado
-    const existingUser = await User.findOne({ email: cleanEmail })
-    if (existingUser) {
+    if (await User.exists({ email: cleanEmail })) {
       return NextResponse.json({ error: 'Email is already registered' }, { status: 400 })
     }
 
-    // Hasheamos la contraseña
+    // 4. Crear usuario con contraseña hasheada
     const hashedPassword = await bcrypt.hash(password, 10)
-
-    // Creamos el usuario en la BD
     const newUser = await User.create({
       name: cleanName,
       lastname: cleanLastname,
@@ -64,76 +59,69 @@ export async function POST(req: Request) {
       theme: 'light',
     })
 
-    // Preparamos el transporte para enviar email
+    // 5. Configurar transporter SMTP (inline)
     const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: Number(process.env.EMAIL_PORT),
-      secure: process.env.NODE_ENV === 'production',
+      host:       process.env.EMAIL_HOST,
+      port:       Number(process.env.EMAIL_PORT || '587'),
+      secure:     process.env.EMAIL_SECURE === 'true',        // true para SSL (465)
+      requireTLS: process.env.EMAIL_REQUIRE_TLS === 'true',   // fuerza STARTTLS en 587
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: process.env.EMAIL_USER!,
+        pass: process.env.EMAIL_PASS!,
       },
     })
 
-    // Email de bienvenida en HTML
+    // Verificar conexión SMTP antes de enviar
+    await transporter.verify()
+
+    // 6. Preparar contenido del email
     const htmlEmail = `
-      <div style="font-family:Arial, sans-serif; background:#f3f4f6; padding:40px;">
-        <div style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:10px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+      <div style="font-family:Arial,sans-serif;background:#f3f4f6;padding:40px;">
+        <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:10px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.05);">
           <div style="padding:30px;">
             <h2 style="color:#2563eb;">Hi, ${cleanName}!</h2>
-            <p style="font-size:16px; line-height:1.6; color:#333;">
+            <p style="font-size:16px;color:#333;line-height:1.6;">
               Welcome to <strong>RivasDev</strong>. Your account has been successfully created.
             </p>
-            <p style="font-size:16px; line-height:1.6; color:#333;">
-              From your Dashboard, you can chat with our team, track your project, and receive updates and offers.
+            <p style="font-size:16px;color:#333;line-height:1.6;">
+              From your Dashboard, you can chat with our team, track your project, and receive updates.
             </p>
-            <div style="text-align:center; margin-top:30px;">
-              <a href="https://rivasdev.com/login" style="background:#2563eb; color:#ffffff; padding:12px 24px; text-decoration:none; border-radius:6px; font-weight:bold; display:inline-block;">
+            <div style="text-align:center;margin-top:30px;">
+              <a href="https://rivasdev.com/login"
+                 style="background:#2563eb;color:#ffffff;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:bold;display:inline-block;">
                 Log In
               </a>
             </div>
           </div>
-          <div style="padding:20px; background:#f9fafb; text-align:center; font-size:13px; color:#777;">
+          <div style="padding:20px;background:#f9fafb;text-align:center;font-size:13px;color:#777;">
             <p>Need help? Contact us at <a href="mailto:info@rivasdev.com" style="color:#2563eb;">info@rivasdev.com</a></p>
             <p style="margin-top:10px;">© ${new Date().getFullYear()} Rivas Technologies LLC</p>
-            <p style="color:#bbb; font-size:12px;">This is an automatic message. Please do not reply.</p>
+            <p style="color:#bbb;font-size:12px;">This is an automatic message. Please do not reply.</p>
           </div>
         </div>
       </div>
     `
+    const textEmail = htmlEmail.replace(/<[^>]+>/g, '')
 
-    // Enviamos el email de bienvenida
-    try {
-      await transporter.sendMail({
-        from: process.env.EMAIL_FROM,
-        to: cleanEmail,
-        subject: 'Welcome to RivasDev – Your account is ready',
-        html: htmlEmail,
-      })
-    } catch (emailErr) {
-      console.error('Error sending welcome email:', emailErr)
-      // No bloqueamos el registro si falla el email
-    }
+    // 7. Enviar email de bienvenida
+    transporter.sendMail({
+      from:    process.env.EMAIL_FROM || `"RivasDev" <info@rivasdev.com>`,
+      to:      cleanEmail,
+      subject: 'Welcome to RivasDev – Your account is ready',
+      text:    textEmail,
+      html:    htmlEmail,
+    }).catch(err => {
+      console.error('[Welcome Email Error]', err)
+    })
 
-    // Preparamos la respuesta sin contraseña
-    const userResponse = {
-      id: newUser._id,
-      name: newUser.name,
-      lastname: newUser.lastname,
-      company: newUser.company,
-      email: newUser.email,
-      role: newUser.role,
-      provider: newUser.provider,
-      createdAt: newUser.createdAt,
-      updatedAt: newUser.updatedAt,
-    }
-
+    // 8. Responder sin exponer contraseña
+    const { _id, createdAt, updatedAt, role, provider } = newUser
     return NextResponse.json({
       message: 'User successfully registered',
-      user: userResponse,
+      user: { id: _id, name: cleanName, lastname: cleanLastname, company: cleanCompany, email: cleanEmail, role, provider, createdAt, updatedAt }
     })
   } catch (err) {
-    console.error('Registration error:', err)
+    console.error('[Registration Error]', err)
     return NextResponse.json(
       { error: 'Internal server error, please try again later.' },
       { status: 500 }

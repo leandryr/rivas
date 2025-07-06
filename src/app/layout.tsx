@@ -41,7 +41,7 @@ export const metadata = {
     title: 'Rivas Technologies LLC | Desarrollo Web y Software Personalizado',
     description:
       'Rivas Technologies LLC diseña, desarrolla e implementa soluciones de software a medida, plataformas SaaS, integración de hardware y consultoría profesional para clientes en Estados Unidos e internacionalmente.',
-    images: ['https://www.rivasdev.com/og-image.jpg'],
+    images: ['https://www.rivasdev.com/og-image.png'],
   },
   metadataBase: new URL('https://www.rivasdev.com'),
 }

@@ -57,7 +57,7 @@ export default function NavbarClient({
           aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
         >
           <Image
-            src="/hamburguesa.png"
+            src="/hamburger.png"
             alt="Menú"
             width={32}
             height={32}

@@ -10,28 +10,19 @@ import bcrypt from 'bcryptjs'
 import nodemailer from 'nodemailer'
 
 function getTransporter() {
-  const isDev = process.env.NODE_ENV !== 'production'
-
-  return nodemailer.createTransport(
-    isDev
-      ? {
-          host: 'localhost',
-          port: 1025,
-          secure: false,
-          tls: {
-            rejectUnauthorized: false,
-          },
-        }
-      : {
-          host: process.env.EMAIL_HOST,
-          port: Number(process.env.EMAIL_PORT),
-          secure: process.env.NODE_ENV === 'production',
-          auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
-          },
-        }
-  )
+  return nodemailer.createTransport({
+    host:       process.env.EMAIL_HOST!,
+    port:       Number(process.env.EMAIL_PORT || '587'),
+    secure:     process.env.EMAIL_SECURE === 'true',        // true si usas 465
+    requireTLS: process.env.EMAIL_REQUIRE_TLS === 'true',   // fuerza STARTTLS en 587
+    auth: {
+      user: process.env.EMAIL_USER!,
+      pass: process.env.EMAIL_PASS!,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  })
 }
 
 async function sendWelcomeEmail(to: string, name: string) {
