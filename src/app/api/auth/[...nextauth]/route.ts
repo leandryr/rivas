@@ -75,16 +75,26 @@ const handler = NextAuth({
         if (!credentials) throw new Error('No credentials provided')
 
         const { email, password } = credentials
-
-        if (!email || !password || typeof email !== 'string' || typeof password !== 'string') {
+        if (
+          !email ||
+          !password ||
+          typeof email !== 'string' ||
+          typeof password !== 'string'
+        ) {
           throw new Error('Invalid credentials')
         }
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Invalid email format')
-        if (password.length < 6) throw new Error('Password must be at least 6 characters long')
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          throw new Error('Invalid email format')
+        }
+        if (password.length < 6) {
+          throw new Error('Password must be at least 6 characters long')
+        }
 
         await connectDB()
+        const user = (await UserModel.findOne({ email }).exec()) as
+          | (IUser & { _id: { toString: () => string } })
+          | null
 
-        const user = (await UserModel.findOne({ email }).exec()) as (IUser & { _id: { toString: () => string } }) | null
         if (!user) throw new Error('User not found')
         if (!user.password) throw new Error('This account has no password set')
 
@@ -113,44 +123,54 @@ const handler = NextAuth({
     signIn: '/login',
   },
 
-callbacks: {
-  async signIn({ user, account }) {
-    if (account?.provider === 'google') {
-      try {
-        await connectDB()
+  // Desactivamos los logs de debug para no ver errores de socket-close
+  debug: false,
 
-        const exists = await UserModel.findOne({ email: user.email }).exec()
-        if (!exists) {
-          if (!user.name || !user.email) {
-            console.warn('[SignIn Warning] Google user missing name or email:', user)
-            return false
+  callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === 'google') {
+        try {
+          await connectDB()
+
+          const exists = await UserModel.findOne({ email: user.email }).exec()
+          if (!exists) {
+            if (!user.name || !user.email) {
+              console.warn(
+                '[SignIn Warning] Google user missing name or email:',
+                user
+              )
+              return false
+            }
+
+            const [firstName, ...rest] = user.name.split(' ')
+            const lastName = rest.join(' ')
+
+            const newUser = await UserModel.create({
+              name: firstName,
+              lastname: lastName || '',
+              email: user.email,
+              avatar: user.image,
+              provider: 'google',
+              role: 'client',
+              isEmailVerified: false,
+              notifications: { email: true, sms: false },
+              theme: 'light',
+            })
+
+            await sendWelcomeEmail(newUser.email, newUser.name)
+            console.info(
+              '[SignIn Info] User created and welcome email sent:',
+              newUser.email
+            )
           }
-
-          const [firstName, ...rest] = user.name.split(' ')
-          const lastName = rest.join(' ')
-
-          const newUser = await UserModel.create({
-            name: firstName,
-            lastname: lastName || '',
-            email: user.email,
-            avatar: user.image,
-            provider: 'google',
-            role: 'client',
-            isEmailVerified: false,
-            notifications: { email: true, sms: false },
-            theme: 'light',
-          })
-
-          await sendWelcomeEmail(newUser.email, newUser.name)
-          console.info('[SignIn Info] User created and welcome email sent:', newUser.email)
+        } catch (err) {
+          // registramos solo como warning en lugar de error
+          console.warn('[SignIn Warning]', { error: err, user, account })
+          return false
         }
-      } catch (err) {
-        console.error('[SignIn Error]', { error: err, user, account })
-        return false
       }
-    }
-    return true
-  },
+      return true
+    },
 
     async jwt({ token, user }) {
       if (user) {
@@ -164,12 +184,17 @@ callbacks: {
         token.bio = (user as { bio?: string }).bio || ''
         token.language = (user as { language?: string }).language || ''
         token.avatar = (user as { avatar?: string | null }).avatar || null
-        token.role =
-          ['admin', 'client'].includes((user as { role: string }).role)
-            ? (user as { role: 'client' | 'admin' }).role
-            : 'client'
-        token.isEmailVerified = (user as { isEmailVerified?: boolean }).isEmailVerified ?? false
-        token.isPhoneVerified = (user as { isPhoneVerified?: boolean }).isPhoneVerified ?? false
+        token.role = ['admin', 'client'].includes(
+          (user as { role: string }).role
+        )
+          ? (user as { role: 'client' | 'admin' }).role
+          : 'client'
+        token.isEmailVerified = (
+          user as { isEmailVerified?: boolean }
+        ).isEmailVerified as boolean
+        token.isPhoneVerified = (
+          user as { isPhoneVerified?: boolean }
+        ).isPhoneVerified as boolean
       }
       return token
     },
@@ -180,7 +205,7 @@ callbacks: {
         session.user.id = token.id as string
         session.user.email = token.email as string
         session.user.name = token.name as string
-        // Aquí agregamos las propiedades extras
+        // Propiedades extra
         ;(session.user as any).lastname = token.lastname
         ;(session.user as any).company = token.company
         ;(session.user as any).phone = token.phone
