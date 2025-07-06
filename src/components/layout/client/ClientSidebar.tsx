@@ -29,7 +29,6 @@ const links: NavLink[] = [
   { href: '/client',            label: 'Dashboard',       icon: HomeIcon,        protected: false },
   { href: '/client/support',    label: 'Support Tickets', icon: TicketIcon,     protected: true  },
   { href: '/client/projects',   label: 'Projects',        icon: FolderIcon,      protected: false },
-  { href: '/client/meetings',   label: 'Meetings',        icon: CalendarIcon,    protected: false },
   { href: '/client/files',      label: 'Documents',       icon: FileTextIcon,    protected: false },
   { href: '/client/quotes',     label: 'Quotes',          icon: FileTextIcon,    protected: false },
   { href: '/client/invoices',   label: 'Invoices',        icon: FileTextIcon,    protected: false },

@@ -50,7 +50,6 @@ export default function DesktopSidebar() {
         { label: 'Projects', href: '/admin/projects', icon: <FolderKanban size={18} /> },
         { label: 'Tasks', href: '/admin/tasks', icon: <ListChecks size={18} /> },
         { label: 'Files', href: '/admin/files', icon: <FileText size={18} /> },
-        { label: 'Meetings', href: '/admin/meetings', icon: <Video size={18} /> },
       ],
     },
     {

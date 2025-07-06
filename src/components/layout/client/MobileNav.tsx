@@ -18,7 +18,6 @@ const links = [
   { href: '/client', icon: HomeIcon, label: 'Home' },
   { href: '/client/support', icon: TicketIcon, label: 'Tickets' },
   { href: '/client/projects', icon: FolderIcon, label: 'Projects' },
-  { href: '/client/meetings', icon: CalendarIcon, label: 'Meetings' },
   { href: '/client/files', icon: FileTextIcon, label: 'Documents' },
 ]
 

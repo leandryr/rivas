@@ -1,80 +1,71 @@
 // src/app/(dashboard)/client/projects/page.tsx
-import { Fragment } from 'react';
-import Link from 'next/link';
-import styles from './Projects.module.css';
-import { TaskButton, TaskList } from '@/components/projects/TaskComponents';
-
-// NextAuth: obtenemos la sesión
-import { getServerSession } from 'next-auth';
-// Importamos authOptions desde src/auth.ts
-import { authOptions } from '@/lib/auth/auth';
-
-import connectDB from '@/lib/db';
-import ProjectModel, { IProject } from '@/models/Project.model';
-import User, { IUser } from '@/models/User';
-
-import { Types } from 'mongoose';
+import { Fragment } from 'react'
+import Link from 'next/link'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth/auth'
+import connectDB from '@/lib/db'
+import ProjectModel from '@/models/Project.model'
+import User from '@/models/User'
+import { Types } from 'mongoose'
+import { TaskButton, TaskList } from '@/components/projects/TaskComponents'
 
 interface ProjectClientDTO {
-  _id: string;
-  title: string;
-  modality: string;
-  status: 'Pendiente' | 'En Proceso' | 'Completado';
-  createdAt: string;
-  updatedAt: string;
-  serviceName: string;
-  serviceDescription: string;
-  subCategory: string;
-  urgency?: string;
-  deadline?: string;
+  _id: string
+  title: string
+  modality: string
+  status: 'Pendiente' | 'En Proceso' | 'Completado'
+  createdAt: string
+  updatedAt: string
+  serviceName: string
+  serviceDescription: string
+  subCategory: string
+  urgency?: string
+  deadline?: string
 }
 
-export const revalidate = 0; // Forzar SSR cada vez
+export const revalidate = 0
 
 export default async function ClientProjectsPage() {
-  // 1) Obtener la sesión del usuario
-  const session = await getServerSession(authOptions);
-  if (!session || !session.user?.email) {
+  // 1) Sesión
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.email) {
     return (
-      <div className={styles.container}>
-        <p>Debes iniciar sesión para ver tus proyectos.</p>
+      <div className="p-4 text-center">
+        <p className="text-red-600">Debes iniciar sesión para ver tus proyectos.</p>
       </div>
-    );
+    )
   }
 
-  // 2) Conectar a MongoDB
-  await connectDB();
+  // 2) Conectar DB
+  await connectDB()
 
-  // 3) Buscar al usuario en base a su email. IMPORTANTE: usar lean<IUser>(), no lean<IUser[]>()
-  const userDoc: IUser | null = await User.findOne({ email: session.user.email }).lean<IUser>();
+  // 3) Buscar usuario
+  const userDoc = await User.findOne({ email: session.user.email }).lean()
   if (!userDoc) {
     return (
-      <div className={styles.container}>
-        <p>Usuario no encontrado.</p>
+      <div className="p-4 text-center">
+        <p className="text-red-600">Usuario no encontrado.</p>
       </div>
-    );
+    )
   }
 
-  // 4) Definir un tipo que represente la forma de cada proyecto "leaned"
+  // 4) Fetch proyectos del usuario
   type LeanedProjectDoc = {
-    _id: Types.ObjectId;
-    title: string;
-    modality: string;
-    status: 'Pendiente' | 'En Proceso' | 'Completado';
-    createdAt: Date;
-    updatedAt: Date;
-    service: { name: string; description: string };
-    subCategory: string;
-    urgency?: 'Alta' | 'Media' | 'Baja';
-    deadline?: Date;
-  };
-
-  // 5) Obtener solo los proyectos cuyo ownerId coincida con userDoc._id.
-  const docs: LeanedProjectDoc[] = await ProjectModel.find({ ownerId: userDoc._id })
+    _id: Types.ObjectId
+    title: string
+    modality: string
+    status: ProjectClientDTO['status']
+    createdAt: Date
+    updatedAt: Date
+    service: { name: string; description: string }
+    subCategory: string
+    urgency?: string
+    deadline?: Date
+  }
+  const docs = await ProjectModel.find({ ownerId: userDoc._id })
     .sort({ createdAt: -1 })
-    .lean<LeanedProjectDoc[]>();
+    .lean<LeanedProjectDoc[]>()
 
-  // 6) Mapear a DTO (convertir _id a string, fechas a ISO)
   const projects: ProjectClientDTO[] = docs.map((doc) => ({
     _id: doc._id.toString(),
     title: doc.title,
@@ -86,86 +77,127 @@ export default async function ClientProjectsPage() {
     serviceDescription: doc.service.description,
     subCategory: doc.subCategory,
     urgency: doc.urgency,
-    deadline: doc.deadline ? doc.deadline.toISOString() : undefined,
-  }));
+    deadline: doc.deadline?.toISOString(),
+  }))
 
   return (
-    <div className={styles.container}>
+    <div className="container mx-auto px-4 py-6">
       {projects.length > 0 && (
-        <header className={styles.header}>
-          <h1 className={styles.title}>Mis Proyectos</h1>
-          <Link href="/client/projects/new" className={styles.addButton}>
+        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
+          <h1 className="text-2xl font-semibold mb-4 sm:mb-0">Mis Proyectos</h1>
+          <Link
+            href="/client/projects/new"
+            className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          >
             + Crear Proyecto
           </Link>
         </header>
       )}
 
       {projects.length === 0 ? (
-        <p className={styles.empty}>
+        <p className="text-center text-gray-600">
           No tienes proyectos todavía.&nbsp;
-          <Link href="/client/projects/new" className={styles.link}>
+          <Link href="/client/projects/new" className="text-blue-600 hover:underline">
             Crear uno
           </Link>
         </p>
       ) : (
-        <table className={styles.table}>
-          <thead className={styles.thead}>
-            <tr>
-              <th className={styles.th}>Título</th>
-              <th className={styles.th}>Estado</th>
-              <th className={styles.th}>Modalidad</th>
-              <th className={styles.th}>Creado</th>
-              <th className={styles.th}>Actualizado</th>
-              <th className={styles.th}>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
+        <>
+          {/* Móvil: tarjetas */}
+          <div className="grid grid-cols-1 sm:hidden gap-4">
             {projects.map((p) => (
-              <Fragment key={p._id}>
-                {/* 1ª fila: datos del proyecto */}
-                <tr className={styles.rowHover}>
-                  <td className={styles.td}>{p.title}</td>
-                  <td className={styles.td}>{p.status}</td>
-                  <td className={styles.td}>{p.modality}</td>
-                  <td className={styles.td}>
-                    {new Date(p.createdAt).toLocaleDateString('es-ES', {
-                      year: 'numeric',
-                      month: '2-digit',
-                      day: '2-digit',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </td>
-                  <td className={styles.td}>
-                    {new Date(p.updatedAt).toLocaleDateString('es-ES', {
-                      year: 'numeric',
-                      month: '2-digit',
-                      day: '2-digit',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </td>
-                  <td className={styles.td}>
-                    <div className={styles.actionsCell}>
-                      <Link href={`/client/projects/${p._id}`} className={styles.detailsLink}>
-                        Ver detalles →
-                      </Link>
-                      <TaskButton projectId={p._id} />
-                    </div>
-                  </td>
-                </tr>
-
-                {/* 2ª fila: lista de tareas (oculta/visible) */}
-                <tr>
-                  <td colSpan={6} className={styles.taskListWrapper}>
-                    <TaskList projectId={p._id} />
-                  </td>
-                </tr>
-              </Fragment>
+              <div
+                key={p._id}
+                className="border rounded-lg p-4 shadow-sm bg-white"
+              >
+                <h2 className="text-lg font-medium mb-2">{p.title}</h2>
+                <p className="text-sm text-gray-600 mb-1">
+                  <span className="font-semibold">Estado:</span> {p.status}
+                </p>
+                <p className="text-sm text-gray-600 mb-1">
+                  <span className="font-semibold">Modalidad:</span> {p.modality}
+                </p>
+                <p className="text-xs text-gray-500 mb-2">
+                  {new Date(p.createdAt).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                  })}
+                </p>
+                <div className="flex justify-between items-center">
+                  <Link
+                    href={`/client/projects/${p._id}`}
+                    className="text-blue-600 text-sm hover:underline"
+                  >
+                    Ver Detalle →
+                  </Link>
+                  <TaskButton projectId={p._id} />
+                </div>
+                <div className="mt-2">
+                  <TaskList projectId={p._id} />
+                </div>
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+
+          {/* Escritorio: tabla */}
+          <div className="hidden sm:block overflow-x-auto">
+            <table className="min-w-full bg-white divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Título</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Estado</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Modalidad</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Creado</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Actualizado</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-100">
+                {projects.map((p) => (
+                  <Fragment key={p._id}>
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-4 py-2 text-sm text-gray-800">{p.title}</td>
+                      <td className="px-4 py-2 text-sm">{p.status}</td>
+                      <td className="px-4 py-2 text-sm">{p.modality}</td>
+                      <td className="px-4 py-2 text-sm text-gray-600">
+                        {new Date(p.createdAt).toLocaleDateString('es-ES', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                        })}
+                      </td>
+                      <td className="px-4 py-2 text-sm text-gray-600">
+                        {new Date(p.updatedAt).toLocaleDateString('es-ES', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                        })}
+                      </td>
+                      <td className="px-4 py-2 text-sm text-center">
+                        <div className="flex items-center justify-center space-x-2">
+                          <Link
+                            href={`/client/projects/${p._id}`}
+                            className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                          >
+                            Ver Detalle
+                          </Link>
+                          <TaskButton projectId={p._id} />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colSpan={6} className="bg-gray-50 px-4 py-2">
+                        <TaskList projectId={p._id} />
+                      </td>
+                    </tr>
+                  </Fragment>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
-  );
+  )
 }

@@ -135,12 +135,6 @@ export default function TopbarMobile() {
               >
                 <FolderIcon className="w-4 h-4 mr-2" /> Projects
               </button>
-              <button
-                onClick={() => { router.push('/client/meetings'); setDropdownOpen(false) }}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <CalendarIcon className="w-4 h-4 mr-2" /> Meetings
-              </button>
 
               <hr className="my-2 border-gray-200 dark:border-gray-700" />
 
