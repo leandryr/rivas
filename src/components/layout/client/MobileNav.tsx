@@ -4,9 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   HomeIcon,
-  TicketIcon,
   FolderIcon,
-  CalendarIcon,
   FileTextIcon,
   LockIcon,
 } from 'lucide-react'
@@ -15,10 +13,9 @@ import { useEffect, useState } from 'react'
 import 'flowbite'
 
 const links = [
-  { href: '/client', icon: HomeIcon, label: 'Home' },
-  { href: '/client/support', icon: TicketIcon, label: 'Tickets' },
-  { href: '/client/projects', icon: FolderIcon, label: 'Projects' },
-  { href: '/client/files', icon: FileTextIcon, label: 'Documents' },
+  { href: '/client', icon: HomeIcon, label: 'Inicio' },
+  { href: '/client/projects', icon: FolderIcon, label: 'Proyectos' },
+  { href: '/client/files', icon: FileTextIcon, label: 'Documentos' },
 ]
 
 export default function MobileNav() {
@@ -32,7 +29,7 @@ export default function MobileNav() {
     const fetchUser = async () => {
       try {
         const res = await fetch('/api/users/me')
-        if (!res.ok) throw new Error('Failed to fetch user data')
+        if (!res.ok) throw new Error('Error al obtener usuario')
         const json = await res.json()
         const user = json.user as {
           isEmailVerified?: boolean
@@ -61,17 +58,20 @@ export default function MobileNav() {
     <>
       {showToast && (
         <div className="fixed top-5 right-5 z-50">
-          <div className="flex items-start w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
+          <div
+            className="flex items-start w-full max-w-xs p-4 text-gray-700 bg-white rounded-lg shadow dark:text-gray-300 dark:bg-gray-800"
+            role="alert"
+          >
             <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 mt-1 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200">
               <LockIcon className="w-5 h-5" />
             </div>
             <div className="ml-3 text-sm font-normal flex-1">
-              <p className="mb-1">You must verify your email to access this section.</p>
+              <p className="mb-1">Debes verificar tu correo para acceder a esta sección.</p>
               <button
                 onClick={goToVerification}
                 className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
               >
-                Verify now
+                Verificar ahora
               </button>
             </div>
           </div>
@@ -87,6 +87,7 @@ export default function MobileNav() {
             <Link
               key={href}
               href={href}
+              aria-label={label}
               className={clsx(
                 'flex flex-col items-center justify-center text-xs',
                 pathname === href
@@ -101,6 +102,7 @@ export default function MobileNav() {
             <button
               key={href}
               onClick={handleRestrictedClick}
+              aria-label={`Bloqueado: ${label}`}
               className="flex flex-col items-center justify-center text-xs text-gray-400 dark:text-gray-500 cursor-not-allowed"
             >
               <LockIcon className="w-5 h-5 mb-0.5" />

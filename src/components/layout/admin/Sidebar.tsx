@@ -1,4 +1,3 @@
-// src/components/DesktopSidebar.tsx
 'use client'
 
 import Link from 'next/link'
@@ -9,13 +8,9 @@ import {
   Globe,
   Layers,
   FileText,
-  Ticket,
   FolderKanban,
   ListChecks,
-  Video,
   Users,
-  Receipt,
-  Wallet,
   LogOutIcon,
   ChevronDownIcon,
   ChevronUpIcon,
@@ -30,7 +25,7 @@ export default function DesktopSidebar() {
   const [avatarUrl, setAvatarUrl] = useState<string>('/user.ico')
   const [openGroup, setOpenGroup] = useState<string | null>(null)
 
-  // Definimos los grupos de navegación
+  // Definimos los grupos de navegación simplificados
   const navGroups = [
     {
       title: 'Main',
@@ -46,7 +41,6 @@ export default function DesktopSidebar() {
       title: 'Management',
       icon: Layers,
       items: [
-        { label: 'Tickets', href: '/admin/tickets', icon: <Ticket size={18} /> },
         { label: 'Projects', href: '/admin/projects', icon: <FolderKanban size={18} /> },
         { label: 'Tasks', href: '/admin/tasks', icon: <ListChecks size={18} /> },
         { label: 'Files', href: '/admin/files', icon: <FileText size={18} /> },
@@ -58,17 +52,6 @@ export default function DesktopSidebar() {
       items: [
         { label: 'All Users', href: '/admin/users', icon: <Users size={18} /> },
         { label: 'Verified Users', href: '/admin/verify', icon: <Layers size={18} /> },
-      ],
-    },
-    {
-      title: 'Finance',
-      icon: Wallet,
-      items: [
-        { label: 'Summary', href: '/admin/finance', icon: <Receipt size={18} /> },
-        { label: 'Payments', href: '/admin/payments', icon: <Receipt size={18} /> },
-        { label: 'Pricing', href: '/admin/pricing', icon: <Wallet size={18} /> },
-        { label: 'Quotes', href: '/admin/quotes', icon: <Receipt size={18} /> },
-        { label: 'Invoices', href: '/admin/invoices', icon: <Receipt size={18} /> },
       ],
     },
   ]

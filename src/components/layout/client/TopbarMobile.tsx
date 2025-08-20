@@ -5,31 +5,20 @@ import {
   SunIcon,
   MoonIcon,
   UserIcon,
-  MailIcon,
-  LogOutIcon,
-  HomeIcon,
-  TicketIcon,
   FolderIcon,
-  CalendarIcon,
   FileTextIcon,
-  FileIcon,
-  CreditCardIcon,
-  DollarSignIcon,
-  LockIcon,
+  LogOutIcon,
 } from 'lucide-react'
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { signOut } from 'next-auth/react'
-
-import NotificationsDropdown from '@/components/NotificationsDropdown'
 
 export default function TopbarMobile() {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const router = useRouter()
 
-  const [isEmailVerified, setIsEmailVerified] = useState(false)
-  const [fullName, setFullName] = useState('Client')
+  const [fullName, setFullName] = useState('Cliente')
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -39,16 +28,15 @@ export default function TopbarMobile() {
     const fetchUser = async () => {
       try {
         const res = await fetch('/api/users/me')
-        if (!res.ok) throw new Error('Failed to fetch user')
+        if (!res.ok) throw new Error('Error al cargar usuario')
         const { user } = await res.json()
-        const name = user.lastname && user.name
-          ? `${user.name} ${user.lastname}`
-          : user.name || 'Client'
+        const name =
+          user.lastname && user.name
+            ? `${user.name} ${user.lastname}`
+            : user.name || 'Cliente'
         setFullName(name)
-        setIsEmailVerified(!!user.isEmailVerified)
       } catch {
-        setFullName('Client')
-        setIsEmailVerified(false)
+        setFullName('Cliente')
       }
     }
 
@@ -57,10 +45,7 @@ export default function TopbarMobile() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setDropdownOpen(false)
       }
     }
@@ -70,28 +55,19 @@ export default function TopbarMobile() {
 
   return (
     <header className="flex md:hidden w-full px-4 py-2 bg-white dark:bg-gray-900 border-b dark:border-gray-700 shadow-sm items-center justify-between relative">
-      {/* Nombre + estado */}
-      <div className="flex items-center gap-2 text-sm font-medium text-gray-800 dark:text-white">
-        <span>{fullName}</span>
-        <span className="flex items-center gap-3 text-xs ml-2">
-          <MailIcon className="w-4 h-4" />
-          <span className={isEmailVerified ? 'text-green-600' : 'text-red-500'}>
-            {isEmailVerified ? 'Verified' : 'Pendiente'}
-          </span>
-        </span>
+      {/* Nombre */}
+      <div className="text-sm font-medium text-gray-800 dark:text-white">
+        {fullName}
       </div>
 
       {/* Botones */}
       <div className="flex items-center gap-3 relative">
-        {/* Dropdown de notificaciones */}
-        <NotificationsDropdown />
-
         {/* Toggle tema */}
         {mounted && (
           <button
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             className="text-gray-600 dark:text-gray-300 hover:text-blue-500"
-            aria-label="Toggle dark mode"
+            aria-label="Cambiar tema"
           >
             {theme === 'dark' ? (
               <SunIcon className="w-5 h-5 text-yellow-400" />
@@ -106,100 +82,41 @@ export default function TopbarMobile() {
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="text-gray-600 dark:text-gray-300 hover:text-blue-500"
-            aria-label="Profile menu"
+            aria-label="Abrir menú de perfil"
           >
             <UserIcon className="w-5 h-5" />
           </button>
 
           {dropdownOpen && (
             <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow z-50">
-              {/* ——— General ——— */}
-              <div className="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
-                General
-              </div>
+              {/* Opciones */}
               <button
-                onClick={() => { router.push('/client'); setDropdownOpen(false) }}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+                onClick={() => { router.push('/client/profile'); setDropdownOpen(false) }}
+                className="flex items-center w-full px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-100"
               >
-                <HomeIcon className="w-4 h-4 mr-2" /> Home
+                <UserIcon className="w-4 h-4 mr-2" /> Perfil
               </button>
               <button
-                onClick={() => { router.push('/client/support'); setDropdownOpen(false) }}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+                onClick={() => { router.push('/client/files'); setDropdownOpen(false) }}
+                className="flex items-center w-full px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-100"
               >
-                <TicketIcon className="w-4 h-4 mr-2" /> Tickets
+                <FileTextIcon className="w-4 h-4 mr-2" /> Documentos
               </button>
               <button
                 onClick={() => { router.push('/client/projects'); setDropdownOpen(false) }}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="flex items-center w-full px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-100"
               >
-                <FolderIcon className="w-4 h-4 mr-2" /> Projects
+                <FolderIcon className="w-4 h-4 mr-2" /> Proyectos
               </button>
 
               <hr className="my-2 border-gray-200 dark:border-gray-700" />
 
-              {/* ——— Finances ——— */}
-              <div className="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
-                Finances
-              </div>
-              <button
-                onClick={() => { router.push('/client/files'); setDropdownOpen(false) }}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <FileTextIcon className="w-4 h-4 mr-2" /> Documents
-              </button>
-              <button
-                onClick={() => { router.push('/client/invoices'); setDropdownOpen(false) }}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <FileIcon className="w-4 h-4 mr-2" /> Invoices
-              </button>
-              <button
-                onClick={() => { router.push('/client/payments'); setDropdownOpen(false) }}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <CreditCardIcon className="w-4 h-4 mr-2" /> Payments
-              </button>
-              <button
-                onClick={() => { router.push('/client/quotes'); setDropdownOpen(false) }}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <FileTextIcon className="w-4 h-4 mr-2" /> Quotes
-              </button>
-              <button
-                onClick={() => { router.push('/client/subscription'); setDropdownOpen(false) }}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <DollarSignIcon className="w-4 h-4 mr-2" /> Subscription
-              </button>
-
-              <hr className="my-2 border-gray-200 dark:border-gray-700" />
-
-              {/* ——— Account ——— */}
-              <div className="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
-                Account
-              </div>
-              <button
-                onClick={() => { router.push('/client/profile'); setDropdownOpen(false) }}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <UserIcon className="w-4 h-4 mr-2" /> Profile
-              </button>
-              <button
-                onClick={() => { router.push('/client/verify'); setDropdownOpen(false) }}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <LockIcon className="w-4 h-4 mr-2" /> Verify Email
-              </button>
-
-              <hr className="my-2 border-gray-200 dark:border-gray-700" />
-
-              {/* Sign Out */}
+              {/* Cerrar sesión */}
               <button
                 onClick={() => signOut()}
-                className="flex items-center gap-2 text-red-600 hover:text-red-700 w-ful­l px-4 py-2 text-sm"
+                className="flex items-center gap-2 text-red-600 hover:text-red-700 w-full px-4 py-2 text-sm"
               >
-                <LogOutIcon className="w-4 h-4 mr-2" /> Sign Out
+                <LogOutIcon className="w-4 h-4 mr-2" /> Cerrar sesión
               </button>
             </div>
           )}

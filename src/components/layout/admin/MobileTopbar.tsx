@@ -9,15 +9,12 @@ import {
   LogOutIcon,
   HomeIcon,
   FolderIcon,
-  CalendarIcon,
   FileTextIcon,
-  CreditCardIcon,
   UsersIcon,
   ServerIcon,
   SettingsIcon,
   FilePlusIcon,
   ClipboardListIcon,
-  TagIcon,
   ShieldIcon,
   ChevronDownIcon,
   ChevronUpIcon,
@@ -38,7 +35,7 @@ export default function MobileTopbar() {
   const [openSection, setOpenSection] = useState<string | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Lista de secciones
+  // Lista de secciones simplificada
   const sections = [
     {
       title: 'General',
@@ -46,8 +43,7 @@ export default function MobileTopbar() {
       items: [
         { label: 'Dashboard',     href: '/admin',           icon: HomeIcon },
         { label: 'Mi Perfil',     href: '/admin/profile',   icon: UserIcon },
-        { label: 'Verificaciones', href: '/admin/verify',    icon: ShieldIcon },
-        { label: 'Ajustes',        href: '/admin/settings',  icon: SettingsIcon },
+        { label: 'Verificaciones', href: '/admin/verify',   icon: ShieldIcon },
       ],
     },
     {
@@ -58,32 +54,6 @@ export default function MobileTopbar() {
         { label: 'Servicios',      href: '/admin/services',    icon: ServerIcon },
         { label: 'Tareas',         href: '/admin/tasks',       icon: ClipboardListIcon },
         { label: 'Publicaciones',  href: '/admin/posts',       icon: FilePlusIcon },
-        { label: 'Pricing',        href: '/admin/pricing',     icon: TagIcon },
-      ],
-    },
-    {
-      title: 'Reuniones',
-      icon: CalendarIcon,
-      items: [
-        { label: 'Meetings',       href: '/admin/meetings',   icon: CalendarIcon },
-      ],
-    },
-    {
-      title: 'Soporte',
-      icon: FileTextIcon,
-      items: [
-        { label: 'Tickets',        href: '/admin/tickets',    icon: FileTextIcon },
-
-      ],
-    },
-    {
-      title: 'Facturación',
-      icon: CreditCardIcon,
-      items: [
-        { label: 'Finanzas',       href: '/admin/finance',     icon: CreditCardIcon },
-        { label: 'Invoices',       href: '/admin/invoices',    icon: FileTextIcon },
-        { label: 'Payments',       href: '/admin/payments',    icon: CreditCardIcon },
-        { label: 'Quotes',         href: '/admin/quotes',      icon: FileTextIcon },
       ],
     },
     {

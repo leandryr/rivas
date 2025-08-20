@@ -4,21 +4,17 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   HomeIcon,
-  LayersIcon,
-  TicketIcon,
   FolderIcon,
   UsersIcon,
-  SettingsIcon,
+  ListChecksIcon,
 } from 'lucide-react';
 import clsx from 'clsx';
 
 const adminLinks = [
   { href: '/admin', icon: HomeIcon, label: 'Inicio' },
-  { href: '/admin/services', icon: LayersIcon, label: 'Servicios' },
-  { href: '/admin/tickets', icon: TicketIcon, label: 'Tickets' },
   { href: '/admin/projects', icon: FolderIcon, label: 'Proyectos' },
   { href: '/admin/users', icon: UsersIcon, label: 'Usuarios' },
-  { href: '/admin/settings', icon: SettingsIcon, label: 'Ajustes' },
+  { href: '/admin/tasks', icon: ListChecksIcon, label: 'Tareas' },
 ];
 
 export default function MobileAdminNav() {

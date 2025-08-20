@@ -1,14 +1,11 @@
-'use client';
+'use client'
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   HomeIcon,
-  TicketIcon,
   FolderIcon,
-  CalendarIcon,
   FileTextIcon,
-  UserIcon,
   LogOutIcon,
   LockIcon,
   MailIcon,
@@ -26,13 +23,9 @@ interface NavLink {
 }
 
 const links: NavLink[] = [
-  { href: '/client',            label: 'Dashboard',       icon: HomeIcon,        protected: false },
-  { href: '/client/support',    label: 'Support Tickets', icon: TicketIcon,     protected: true  },
-  { href: '/client/projects',   label: 'Projects',        icon: FolderIcon,      protected: false },
-  { href: '/client/files',      label: 'Documents',       icon: FileTextIcon,    protected: false },
-  { href: '/client/quotes',     label: 'Quotes',          icon: FileTextIcon,    protected: false },
-  { href: '/client/invoices',   label: 'Invoices',        icon: FileTextIcon,    protected: false },
-  { href: '/client/profile',    label: 'Profile',         icon: UserIcon,        protected: false },
+  { href: '/client',          label: 'Dashboard', icon: HomeIcon,     protected: false },
+  { href: '/client/projects', label: 'Projects',  icon: FolderIcon,   protected: false },
+  { href: '/client/files',    label: 'Documents', icon: FileTextIcon, protected: false },
 ];
 
 export default function ClientSidebar() {
